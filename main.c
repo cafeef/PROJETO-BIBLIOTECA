@@ -4,11 +4,36 @@
 
 void limpar();
 
-typedef struct {
-    char titulo[100];
-    char autor[100];
-    int ano;
-} Livro;
+typedef struct livros {
+    int codigo;
+    char titulo[20], autor[15], genero[15];
+    int status; //1 - disponivel | 2 - reservado | 3 - emprestado
+    int num_reservas, qnt_total;
+} Tlivro;
+
+typedef struct leitor {
+    int codigo;
+    char nome[20], email[15];
+    int qtd_emprestados, hist_multas;
+} Tleitor;
+
+typedef struct funcionario {
+    int codigo;
+    char nome[20];
+    int cargo; //1 - operador | 2 - administrador
+    int total_emprestimos, total_devolucoes;
+} Tfuncionario;
+
+typedef struct emprestimos {
+    int codigo, codigo_livro, cod_leitor;
+    char data_emp[20], data_devp[15];
+    int status; //0 - ativo | 1 - finalizado
+} Temprestimos;
+
+typedef struct reserva {
+    int codigo, codigo_livro, cod_leitor;
+    char data_reserva[20];
+} Treserva;
 
 int main() {
    limpar();
@@ -48,8 +73,8 @@ void adicionarLivroDinamicamente(Livro **livros, int *quantidade) {
     fgets((*livros)[*quantidade].autor, 100, stdin);
     (*livros)[*quantidade].autor[strcspn((*livros)[*quantidade].autor, "\n")] = 0;
 
-    printf("Digite o ano de publicação: ");
-    scanf("%d", &(*livros)[*quantidade].ano);
+    printf("Digite o gênero: ");
+    scanf("%d", &(*livros)[*quantidade].genero);
     getchar(); // Limpa o buffer
 
     // Incrementa a quantidade de livros
