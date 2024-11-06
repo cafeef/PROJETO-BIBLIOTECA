@@ -20,7 +20,7 @@ typedef struct leitor {
 typedef struct funcionario {
     int codigo;
     char nome[20];
-    int cargo; //1 - operador | 2 - administrador
+    int cargo; //1 - operador | 2 - auxiliar | 3 - administrador
     int total_emprestimos, total_devolucoes;
 } Tfuncionario;
 
