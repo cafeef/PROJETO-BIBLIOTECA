@@ -36,6 +36,7 @@ typedef struct reserva {
 } Treserva;
 
 void adicionarUsuario(Tleitor **leitores, int *quantidade);
+void novoacesso(Tleitor **leitores, int *quantidade);
 
 int main() {
     limpar();
@@ -112,18 +113,11 @@ int main() {
    int sl;
    while(sl>4 || sl<1) {
     printf("\n\nDigite o código da ação: ");
+    
     scanf("%d", &sl);
 
-    adicionarUsuario(&pleitor, &num_linhasLeitor);
-    for (i = 0; i < num_linhasLeitor; i++) {
-        printf("%d %s %s %d %d\n", 
-            (pleitor + i)->codigo, 
-            (pleitor + i)->nome, 
-            (pleitor + i)->email, 
-            (pleitor + i)->qtd_emprestados, 
-            (pleitor + i)->hist_multas);
-    }
-    reescreverLeitor(&pleitor, &num_linhasLeitor);
+   novoacesso(&pleitor, &num_linhasLeitor);
+  
     
 
      
@@ -177,7 +171,6 @@ void adicionarUsuario(Tleitor **leitores, int *quantidade) {
 
     // Adição de 1 Leitor a quantidade
    
-    getchar(); // Limpa o buffer
     printf("Digite o nome do usuário: ");
     scanf("%s", &(*leitores)[*quantidade].nome);
     getchar(); // Limpa o buffer
@@ -228,4 +221,48 @@ void reescreverLeitor(Tleitor **leitores, int *quantidade){
     fclose(reescrita);  // Fecha o arquivo
 
     printf("Arquivo reescrito com sucesso!\n");
+}
+
+void novoacesso(Tleitor **leitores, int *quantidade) {
+    limpar();
+    getchar(); // Limpa o buffer
+    int op;
+    printf("| NOVO ACESSO\n\n1 | Usuário existente\n2 | Adicionar usuário\n\nDigite a operação: ");
+    scanf("%d", &op);
+    getchar(); // Limpa o buffer
+    if (op == 1) {
+        limpar();
+        printf("| NOVO ACESSO\n\nDigite o código do usuário:");
+        scanf("%d", &op);
+        getchar(); // Limpa o buffer
+
+        printf("| LEITOR\nCódigo:%d\nNome: %s\nE-mail: %s\n",   
+        (*leitores)[op-1].codigo,  
+        (*leitores)[op-1].nome,
+        (*leitores)[op-1].email);
+
+        printf("\nPressione qualquer tecla para voltar ao menu...\n");
+        getchar();  // Aguarda o usuário pressionar uma tecla antes de continuar
+
+
+    } else if (op == 2) {
+        limpar();
+        printf("| NOVO ACESSO\n\n");
+        // Chamando a função para adicionar o usuário
+        adicionarUsuario(&*leitores, &*quantidade);
+        
+        // Exibindo informações após a adição do usuário
+        limpar();
+        printf("| NOVO ACESSO\n\n");
+        printf("| NOVO USUÁRIO CADASTRADO\nCódigo:%d\nNome: %s\nE-mail: %s\n",   
+        (*leitores)[*quantidade - 1].codigo,  
+        (*leitores)[*quantidade - 1].nome,
+        (*leitores)[*quantidade - 1].email);
+
+        reescreverLeitor(&*leitores, &*quantidade);
+
+        // Você pode adicionar aqui um "pause" se necessário
+        printf("\nPressione qualquer tecla para voltar ao menu...\n");
+        getchar();  // Aguarda o usuário pressionar uma tecla antes de continuar
+    }
 }

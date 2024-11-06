@@ -1,6 +1,9 @@
-5
+8
 1 Fernanda_Pacheco fer@email.com 1 0
 2 Andre_Martins andre@email.com 0 0
 3 Pedro_Carvalho pedro@email.com 0 0
 4 Lucas_Pereira lucas@email.com 1 0
 5 Pedro_Giordano pedrog@gmail.com 0 0
+6 d "c:\Users\pedro\ 0 0
+7 Bryan bryan@gmail.com 0 0
+8 Manuela manu@hot.com 0 0
