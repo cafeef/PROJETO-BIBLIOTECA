@@ -10,36 +10,26 @@ typedef struct {
     int ano;
 } Livro;
 
-
-int main(){
-
+int main() {
    limpar();
    SetConsoleOutputCP(CP_UTF8);
 
    printf("| BIBLIOTECA VIRTUAL\n\n1 | Novo acesso\n2 | Consulta de acervo\n3 | Relatórios\n4 | Administração");
 
    int sl;
-   while(sl>4 || sl<1){
+   while(sl>4 || sl<1) {
     printf("\n\nDigite o código da ação: ");
     scanf("%d", &sl);
-
    }
-    
+}
 
-Livro livro1 = {"O Senhor dos Anéis", "J.R.R. Tolkien", 1954};
-printf("%s", livro1.titulo);
-
-    return 0;
-
-};
-
-void limpar(){
+void limpar() {
     #ifdef _WIN32
         system("cls");  // Limpa o terminal no Windows
     #else
         system("clear");  // Limpa o terminal no Linux/macOS
     #endif
-};
+}
 
 void adicionarLivroDinamicamente(Livro **livros, int *quantidade) {
     // Realoca memória para armazenar mais um livro
