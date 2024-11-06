@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef _WIN32
 #include <windows.h>
+#endif
 
 void limpar();
 
@@ -40,7 +42,9 @@ void novoacesso(Tleitor **leitores, int *quantidade);
 
 int main() {
     limpar();
+    #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
+    #endif
     FILE *livros, *leitores, *funcionarios, *emprestimos, *reservas; //criação dos ponteiros que irão ler os arquivos
     Tlivro *plivros; //criação do ponteiro que vai mexer com a struct
     Tleitor *pleitor; //criação do ponteiro que vai mexer com a struct
@@ -104,7 +108,7 @@ int main() {
             (pleitor + i)->qtd_emprestados, 
             (pleitor + i)->hist_multas);
     }
-    
+    printf("\n");
     for (i = 0; i < num_linhas; i++) //impressão de cada struct
         printf("%d %s %s %s %d %d %d\n", ((plivros + i)->codigo), ((plivros + i)->titulo), ((plivros + i)->autor), ((plivros + i)->genero), ((plivros + i)->status), ((plivros + i)->num_reservas), ((plivros + i)->qnt_total));
 
