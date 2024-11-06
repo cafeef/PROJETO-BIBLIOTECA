@@ -55,8 +55,8 @@ int main() {
     livros = fopen("C:.\\dados\\livros.txt", "r"); // Caminho para Windows
     leitores = fopen("C:.\\dados\\leitores.txt", "r");
     #else
-        livros = fopen("C:/dados/livros.txt", "r"); // Caminho para Linux/macOS
-        leitores = fopen("C:/dados/leitores.txt", "r");
+        livros = fopen("./dados/livros.txt", "r"); // Caminho para Linux/macOS
+        leitores = fopen("./dados/leitores.txt", "r");
     #endif
     
     if(!livros || !leitores) { //verificação se o arquivo foi aberto
@@ -135,7 +135,7 @@ void limpar() {
         system("clear");  // Limpa o terminal no Linux/macOS
     #endif
 }
-
+/*
 void adicionarLivroDinamicamente(Tlivro **livros, int *quantidade) {
     // Realoca memória para armazenar mais um livro
     *livros = realloc(*livros, (*quantidade + 1) * sizeof(Tlivro));
@@ -160,7 +160,7 @@ void adicionarLivroDinamicamente(Tlivro **livros, int *quantidade) {
     // Incrementa a quantidade de livros
     (*quantidade)++;
 }
-
+*/
 void adicionarUsuario(Tleitor **leitores, int *quantidade) {
 
     // Realoca memória -  adiciona um item a Tleitor
@@ -203,7 +203,7 @@ void reescreverLeitor(Tleitor **leitores, int *quantidade){
     #ifdef _WIN32
         reescrita = fopen("C:.\\dados\\leitores.txt", "w");
     #else
-        reescrita = fopen("C:/dados/leitores.txt", "w");
+        reescrita = fopen("./dados/leitores.txt", "w");
     #endif
 
     if (reescrita == NULL) {
