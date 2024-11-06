@@ -56,9 +56,9 @@ void limpar() {
     #endif
 }
 
-void adicionarLivroDinamicamente(Livro **livros, int *quantidade) {
+void adicionarLivroDinamicamente(Tlivro **livros, int *quantidade) {
     // Realoca memória para armazenar mais um livro
-    *livros = realloc(*livros, (*quantidade + 1) * sizeof(Livro));
+    *livros = realloc(*livros, (*quantidade + 1) * sizeof(Tlivro));
     if (*livros == NULL) {
         printf("Erro ao alocar memória.\n");
         exit(1);
