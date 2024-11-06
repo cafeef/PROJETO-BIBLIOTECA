@@ -43,35 +43,46 @@ int main() {
     FILE *livros, *leitores, *funcionarios, *emprestimos, *reservas; //criação dos ponteiros que irão ler os arquivos
     Tlivro *plivros; //criação do ponteiro que vai mexer com a struct
     Tleitor *pleitor; //criação do ponteiro que vai mexer com a struct
+
     int i, num_linhas, num_linhasLeitor; //contador i pro for e num_linhas pra quantidade de linhas de cada arquivo
-    livros = fopen("C:.\\dados\\livros.txt", "r"); //abrindo um arquivo pelo windows
+
+    #ifdef _WIN32
+    livros = fopen("C:.\\dados\\livros.txt", "r"); // Caminho para Windows
     leitores = fopen("C:.\\dados\\leitores.txt", "r");
+    #else
+        livros = fopen("C:/dados/livros.txt", "r"); // Caminho para Linux/macOS
+        leitores = fopen("C:/dados/leitores.txt", "r");
+    #endif
     
-    if(!livros) { //verificação se o arquivo foi aberto
-        printf("Arquivo não aberto\n");
+    if(!livros || !leitores) { //verificação se o arquivo foi aberto
+        printf("Erro! Impossível de abrir um dos arquivos.\n");
         exit(1);
     }
-     if(!leitores) { //verificação se o arquivo foi aberto
-        printf("Arquivo não aberto\n");
-        exit(1);
+    else{
+         printf("Sucesso! Arquivos inicializados.\n"); 
     }
    
-    printf("Sucesso na abertura dos arquivos\n"); 
-    fscanf(livros, "%d", &num_linhas); //recebimento da quantidade de linhas do arquivo livros
-     //recebimento da quantidade de linhas do arquivo livros
-   fscanf(leitores, "%d", &num_linhasLeitor);
+    //recebimento da quantidade de linhas do arquivo livros 
+    fscanf(livros, "%d", &num_linhas); 
+    fscanf(leitores, "%d", &num_linhasLeitor);
     
-
-    if (num_linhas == 5) //verificação
-        printf("Sucesso na leitura de tamanho\n");
     
     plivros = (Tlivro *)malloc(sizeof(Tlivro) * num_linhas); //criação de um vetor de structs dinâmico
-    for (i = 0; i < num_linhas; i++) { //leitura dos dados e armazenamento nas structs
-        fscanf(livros, "%d %s %s %s %d %d %d", &(plivros + i)->codigo, &(plivros + i)->titulo, &(plivros + i)->autor, &(plivros + i)->genero, &(plivros + i)->status, &(plivros + i)->num_reservas, &(plivros + i)->qnt_total);
+    for (i = 0; i < num_linhas; i++) { 
+        
+        //leitura dos dados e armazenamento nas structs
+        fscanf(livros, "%d %s %s %s %d %d %d", 
+            &(plivros + i)->codigo, 
+            &(plivros + i)->titulo, 
+            &(plivros + i)->autor, 
+            &(plivros + i)->genero, 
+            &(plivros + i)->status, 
+            &(plivros + i)->num_reservas, 
+            &(plivros + i)->qnt_total);
     }
 
    
-pleitor = (Tleitor *)malloc(sizeof(Tleitor) * num_linhasLeitor);  // Aloca memória para os leitores
+    pleitor = (Tleitor *)malloc(sizeof(Tleitor) * num_linhasLeitor);  // Aloca memória para os leitores
 
     // Lê os dados dos leitores (nome, e-mail, etc.)
     for (i = 0; i < num_linhasLeitor; i++) {
@@ -112,6 +123,7 @@ pleitor = (Tleitor *)malloc(sizeof(Tleitor) * num_linhasLeitor);  // Aloca memó
             (pleitor + i)->qtd_emprestados, 
             (pleitor + i)->hist_multas);
     }
+    reescreverLeitor(&pleitor, &num_linhasLeitor);
     
 
      
@@ -186,6 +198,34 @@ void adicionarUsuario(Tleitor **leitores, int *quantidade) {
      (*quantidade)++;
 }
 
+void reescreverLeitor(Tleitor **leitores, int *quantidade){
 
+   FILE *reescrita;
+    int i;
 
+    #ifdef _WIN32
+        reescrita = fopen("C:.\\dados\\leitores.txt", "w");
+    #else
+        reescrita = fopen("C:/dados/leitores.txt", "w");
+    #endif
 
+    if (reescrita == NULL) {
+        printf("Erro ao abrir o arquivo em modo de edição!\n");
+        return;  // Retorna sem fazer nada se o arquivo não for aberto
+    }
+
+    // Escreve a quantidade de leitores no arquivo
+    fprintf(reescrita, "%d\n", *quantidade);  // Escreve o número de leitores no começo do arquivo
+
+    for (i = 0; i < *quantidade; i++) {
+        // Escreve os dados de cada leitor no arquivo
+        fprintf(reescrita, "%d %s %s %d %d\n",
+                (*leitores)[i].codigo, (*leitores)[i].nome, 
+                (*leitores)[i].email, (*leitores)[i].qtd_emprestados, 
+                (*leitores)[i].hist_multas);
+    }
+
+    fclose(reescrita);  // Fecha o arquivo
+
+    printf("Arquivo reescrito com sucesso!\n");
+}
