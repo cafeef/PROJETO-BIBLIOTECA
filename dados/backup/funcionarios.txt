@@ -1,0 +1,4 @@
+3
+1 João_Nunes 1 10 15
+2 Mariana_Ferreira 2 15 10
+3 Julia_Machado 3 5 3
