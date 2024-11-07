@@ -4,7 +4,7 @@
 3 Pedro_Carvalho pedro@email.com 0 0
 4 Lucas_Pereira lucas@email.com 1 0
 5 Pedro_Giordano pedrog@gmail.com 0 0
-6 d "c:\Users\pedro\ 0 0
+6 Pedro pedro@hot.com 0 0
 7 Bryan bryan@gmail.com 0 0
 8 Manuela manu@hot.com 0 0
 9 Joaquim joaquim@email.co 0 0
