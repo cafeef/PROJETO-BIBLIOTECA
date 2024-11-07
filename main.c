@@ -1,10 +1,9 @@
 #include <stdio.h>
+
 #include <stdlib.h>
 #ifdef _WIN32
 #include <windows.h>
 #endif
-
-void limpar();
 
 typedef struct livros {
     int codigo;
@@ -36,7 +35,9 @@ typedef struct reserva {
     int codigo, codigo_livro, cod_leitor;
     char data_reserva[20];
 } Treserva;
-
+void limpar();
+Tlivro *inicializa_livros ();
+Tleitor *inicializa_leitor();
 void adicionarUsuario(Tleitor **leitores, int *quantidade);
 void novoacesso(Tleitor **leitores, int *quantidade);
 
@@ -46,19 +47,11 @@ int main() {
     SetConsoleOutputCP(CP_UTF8);
     #endif
     FILE *livros, *leitores, *funcionarios, *emprestimos, *reservas; //criação dos ponteiros que irão ler os arquivos
-    Tlivro *plivros; //criação do ponteiro que vai mexer com a struct
-    Tleitor *pleitor; //criação do ponteiro que vai mexer com a struct
-
-    int i, num_linhas, num_linhasLeitor; //contador i pro for e num_linhas pra quantidade de linhas de cada arquivo
-
-    #ifdef _WIN32
-    livros = fopen("C:.\\dados\\livros.txt", "r"); // Caminho para Windows
-    leitores = fopen("C:.\\dados\\leitores.txt", "r");
-    #else
-        livros = fopen("./dados/livros.txt", "r"); // Caminho para Linux/macOS
-        leitores = fopen("./dados/leitores.txt", "r");
-    #endif
-    
+    int num_linhas, num_linhasLeitor; //contador i pro for e num_linhas pra quantidade de linhas de cada arquivo
+    Tlivro *plivros = NULL;
+    Tleitor *pleitor = NULL;
+    plivros = inicializa_livros();
+    pleitor = inicializa_leitor();
     if(!livros || !leitores) { //verificação se o arquivo foi aberto
         printf("Erro! Impossível de abrir um dos arquivos.\n");
         exit(1);
@@ -66,67 +59,17 @@ int main() {
     else{
          printf("Sucesso! Arquivos inicializados.\n"); 
     }
-   
-    //recebimento da quantidade de linhas do arquivo livros 
-    fscanf(livros, "%d", &num_linhas); 
-    fscanf(leitores, "%d", &num_linhasLeitor);
-    
-    
-    plivros = (Tlivro *)malloc(sizeof(Tlivro) * num_linhas); //criação de um vetor de structs dinâmico
-    for (i = 0; i < num_linhas; i++) { 
-        
-        //leitura dos dados e armazenamento nas structs
-        fscanf(livros, "%d %s %s %s %d %d %d", 
-            &(plivros + i)->codigo, 
-            &(plivros + i)->titulo, 
-            &(plivros + i)->autor, 
-            &(plivros + i)->genero, 
-            &(plivros + i)->status, 
-            &(plivros + i)->num_reservas, 
-            &(plivros + i)->qnt_total);
-    }
 
-   
-    pleitor = (Tleitor *)malloc(sizeof(Tleitor) * num_linhasLeitor);  // Aloca memória para os leitores
-
-    // Lê os dados dos leitores (nome, e-mail, etc.)
-    for (i = 0; i < num_linhasLeitor; i++) {
-        fscanf(leitores, "%d %s %s %d %d", 
-            &(pleitor + i)->codigo, 
-            &(pleitor + i)->nome, 
-            &(pleitor + i)->email, 
-            &(pleitor + i)->qtd_emprestados, 
-            &(pleitor + i)->hist_multas);
-    }
-
-    // Exibição dos leitores
-    for (i = 0; i < num_linhasLeitor; i++) {
-        printf("%d %s %s %d %d\n", 
-            (pleitor + i)->codigo, 
-            (pleitor + i)->nome, 
-            (pleitor + i)->email, 
-            (pleitor + i)->qtd_emprestados, 
-            (pleitor + i)->hist_multas);
-    }
-    printf("\n");
-    for (i = 0; i < num_linhas; i++) //impressão de cada struct
-        printf("%d %s %s %s %d %d %d\n", ((plivros + i)->codigo), ((plivros + i)->titulo), ((plivros + i)->autor), ((plivros + i)->genero), ((plivros + i)->status), ((plivros + i)->num_reservas), ((plivros + i)->qnt_total));
-
-   printf("\n| BIBLIOTECA VIRTUAL\n\n1 | Novo acesso\n2 | Consulta de acervo\n3 | Relatórios\n4 | Administração");
+    printf("\n| BIBLIOTECA VIRTUAL\n\n1 | Novo acesso\n2 | Consulta de acervo\n3 | Relatórios\n4 | Administração");
 
    int sl;
    while(sl>4 || sl<1) {
     printf("\n\nDigite o código da ação: ");
-    
     scanf("%d", &sl);
-
-   novoacesso(&pleitor, &num_linhasLeitor);
-  
-    
-
-     
+    novoacesso(&pleitor, &num_linhasLeitor);
    }
 }
+
 
 void limpar() {
     #ifdef _WIN32
@@ -161,6 +104,53 @@ void adicionarLivroDinamicamente(Tlivro **livros, int *quantidade) {
     (*quantidade)++;
 }
 */
+
+Tlivro *inicializa_livros () {
+    FILE *livros;
+    Tlivro *plivros; //criação do ponteiro que vai mexer com a struct
+    int num_linhas;
+    #ifdef _WIN32
+    livros = fopen("C:.\\dados\\livros.txt", "r"); // Caminho para Windows
+    #else
+        livros = fopen("./dados/livros.txt", "r"); // Caminho para Linux/macOS
+    #endif
+    fscanf(livros, "%d", &num_linhas);//recebe a quantidade de linhas
+    plivros = (Tlivro *)malloc(sizeof(Tlivro) * num_linhas);
+    
+    for (int i = 0; i < num_linhas; i++) { //leitura dos dados e armazenamento nas structs
+        fscanf(livros, "%d %s %s %s %d %d %d", &(plivros + i)->codigo, &(plivros + i)->titulo, &(plivros + i)->autor, &(plivros + i)->genero, &(plivros + i)->status, &(plivros + i)->num_reservas, 
+        &(plivros + i)->qnt_total);
+    }
+    for (int i = 0; i < num_linhas; i++) //impressão de cada struct
+        printf("%d %s %s %s %d %d %d\n", ((plivros + i)->codigo), ((plivros + i)->titulo), ((plivros + i)->autor), ((plivros + i)->genero), ((plivros + i)->status), ((plivros + i)->num_reservas), ((plivros + i)->qnt_total));
+    printf("\n");
+    return plivros;
+}
+
+Tleitor *inicializa_leitor(){
+    FILE *leitores;
+    Tleitor *pleitor; //criação do ponteiro que vai mexer com a struct
+    //criação de um vetor de structs dinâmico
+    int num_linhasLeitor;
+    #ifdef _WIN32// Caminho para Windows
+    leitores = fopen("C:.\\dados\\leitores.txt", "r");
+    #else // Caminho para Linux/macOS
+        leitores = fopen("./dados/leitores.txt", "r");
+    #endif
+    fscanf(leitores, "%d", &num_linhasLeitor);
+    pleitor = (Tleitor *)malloc(sizeof(Tleitor) * num_linhasLeitor);  // Aloca memória para os leitores
+    // Lê os dados dos leitores (nome, e-mail, etc.)
+    for (int i = 0; i < num_linhasLeitor; i++) {
+        fscanf(leitores, "%d %s %s %d %d", &(pleitor + i)->codigo, &(pleitor + i)->nome, &(pleitor + i)->email, &(pleitor + i)->qtd_emprestados, &(pleitor + i)->hist_multas);
+    }
+    // Exibição dos leitores
+    for (int i = 0; i < num_linhasLeitor; i++) {
+        printf("%d %s %s %d %d\n", (pleitor + i)->codigo, (pleitor + i)->nome, (pleitor + i)->email, (pleitor + i)->qtd_emprestados, (pleitor + i)->hist_multas);
+    }
+    printf("\n");
+    return pleitor;
+}
+
 void adicionarUsuario(Tleitor **leitores, int *quantidade) {
 
     // Realoca memória -  adiciona um item a Tleitor
