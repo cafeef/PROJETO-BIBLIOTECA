@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+#include <time.h>
 #include <stdlib.h>
 #ifdef _WIN32
 #include <windows.h>
@@ -27,7 +27,7 @@ typedef struct funcionario {
 
 typedef struct emprestimos {
     int codigo, codigo_livro, cod_leitor;
-    char data_emp[20], data_devp[15];
+    char data_emp[20], data_devp[20];
     int status; //0 - ativo | 1 - finalizado
 } Temprestimos;
 
@@ -42,7 +42,11 @@ Tfuncionario *inicializa_funcionarios(int *num_linhasFuncionario);
 Temprestimos *inicializa_emprestimos (int *num_linhasEmprestimos);
 Treserva *inicializa_reserva (int *num_linhasReserva);
 void adicionarUsuario(Tleitor **leitores, int *quantidade);
-void novoacesso(Tleitor **leitores, int *quantidade);
+void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos, int *quantidadeem, Tlivro **livros, int *quantidadeli);
+int diferenca_tempo(const char *d1, const char *d2);
+int diasNoMes(int mes, int ano);
+void adicionarDias(char *data, int dias, char *novadata);
+
 
 int main() {
     limpar();
@@ -80,7 +84,7 @@ int main() {
    while(sl>4 || sl<1) {
     printf("\n\nDigite o código da ação: ");
     scanf("%d", &sl);
-    novoacesso(&pleitor, &num_linhasLeitor);
+    novoacesso(&pleitor, &num_linhasLeitor, &pemprestimos, &num_linhasEmprestimo, &plivros, &num_linhasLivro);
    }
 }
 
@@ -288,7 +292,7 @@ void reescreverLeitor(Tleitor **leitores, int *quantidade){
     printf("Arquivo reescrito com sucesso!\n");
 }
 
-void novoacesso(Tleitor **leitores, int *quantidade) {
+void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos, int *quantidadeem, Tlivro **livros, int *quantidadeli) {
     limpar();
     getchar(); // Limpa o buffer
     int op;
@@ -305,6 +309,51 @@ void novoacesso(Tleitor **leitores, int *quantidade) {
         (*leitores)[op-1].codigo,  
         (*leitores)[op-1].nome,
         (*leitores)[op-1].email);
+
+        printf("\n\n1 | Empréstimo\n2 | Renovar/Devolver livro");
+        scanf("%d", &op);
+        getchar(); // Limpa o buffer
+        if(op==2){
+            int i;
+            limpar();
+            printf("Livros locados - %s",  (*leitores)[op-1].nome);
+            printf("\n");
+            for(i=0;i<*quantidadeem; i++){
+               if((*emprestimos)[i].cod_leitor == (*leitores)[op-1].codigo){
+                int j;
+                char nlivro[20];
+                
+            for(j = 0; j < *quantidadeli; j++) {
+                if ((*livros)[j].codigo == (*emprestimos)[i].codigo_livro) {
+                    // Aqui você pode realizar o que deseja quando o código do livro corresponde
+                   strcpy(nlivro, (*livros)[j].titulo);
+                }
+            }
+
+            printf("\n%d | Livro: %s | Dat. empr: %s - Dat. dev: %s",(*emprestimos)[i].codigo, nlivro, (*emprestimos)[i].data_emp,(*emprestimos)[i].data_devp);
+            }
+            int lop;
+            printf("\nDigite o código do livro para operação: ");
+            scanf("%d", &lop);
+            getchar(); // Limpa o buffer
+
+            printf("\n\n1 | Renovar empréstimo\n2 | Devolver livro ");
+            scanf("%d", &op);
+            getchar(); // Limpa o buffer
+            if(op == 1){
+                char* novadata[20]; 
+                int dif = diferenca_tempo((*emprestimos)[lop].data_emp,(*emprestimos)[lop].data_devp);
+               
+                if(dif == 0){
+                  
+                    adicionarDias((*emprestimos)[lop].data_devp, 7, *novadata);
+                    //NAO ESTA FUNCIONADO NOVADATA
+                    printf("Livro renovado! A nova data de devolução é: %s",novadata);
+                   
+                }
+            }
+
+        }
 
         printf("\nPressione qualquer tecla para voltar ao menu...\n");
         getchar();  // Aguarda o usuário pressionar uma tecla antes de continuar
@@ -330,4 +379,63 @@ void novoacesso(Tleitor **leitores, int *quantidade) {
         printf("\nPressione qualquer tecla para voltar ao menu...\n");
         getchar();  // Aguarda o usuário pressionar uma tecla antes de continuar
     }
+}
+}
+
+//Função de separação de datas
+
+
+int diferenca_tempo(const char *d1, const char *d2) {
+    struct tm t1 = {0}, t2 = {0};
+    time_t time1, time2;
+    
+    sscanf(d1, "%d-%d-%d", &t1.tm_mday, &t1.tm_mon, &t1.tm_year);
+    sscanf(d2, "%d-%d-%d", &t2.tm_mday, &t2.tm_mon, &t2.tm_year);
+    
+    t1.tm_mon -= 1; t1.tm_year -= 1900;
+    t2.tm_mon -= 1; t2.tm_year -= 1900;
+
+    time1 = mktime(&t1);
+    time2 = mktime(&t2);
+
+    return (difftime(time2, time1) / (60 * 60 * 24) > 7) ? 1 : 0;
+}
+
+int diasNoMes(int mes, int ano) {
+    // Número de dias de cada mês
+    if (mes == 1 || mes == 3 || mes == 5 || mes == 7 || mes == 8 || mes == 10 || mes == 12)
+        return 31;
+    if (mes == 4 || mes == 6 || mes == 9 || mes == 11)
+        return 30;
+    // Fevereiro, verificando ano bissexto
+    return (ano % 4 == 0 && (ano % 100 != 0 || ano % 400 == 0)) ? 29 : 28;
+}
+
+void adicionarDias(char *data, int dias, char *novadata) {
+ 
+
+    int dia, mes, ano;
+    sscanf(data, "%d-%d-%d", &dia, &mes, &ano);
+
+    // Adicionando os dias à data
+    dia += dias;
+
+    // Verificando o dia, mês e ano após a adição
+
+
+    // Ajustando a data se o dia ultrapassar o número de dias do mês
+    while (dia > diasNoMes(mes, ano)) {
+        dia -= diasNoMes(mes, ano);
+        mes++;
+        if (mes > 12) {
+            mes = 1;
+            ano++;
+        }
+    }
+
+    printf("Devolver em: %02d-%02d-%d\n", dia, mes, ano);
+
+    // Formatando a nova data
+    sprintf(novadata, "%02d-%02d-%d", dia, mes, ano);
+    return;
 }
