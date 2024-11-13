@@ -2,6 +2,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -44,7 +45,7 @@ Temprestimos *inicializa_emprestimos (int *num_linhasEmprestimos);
 Treserva *inicializa_reserva (int *num_linhasReserva);
 void adicionarUsuario(Tleitor **leitores, int *quantidade);
 void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos, int *quantidadeem, Tlivro **livros, int *quantidadeli);
-int diferenca_tempo(const char *d1, const char *d2);
+int comparar(const char *d1);
 int diasNoMes(int mes, int ano);
 void adicionarDias(char *data, int dias, char *novadata);
 void relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo);
@@ -323,7 +324,6 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
                if(((*emprestimos)[i].cod_leitor == (*leitores)[cod].codigo) && ((*emprestimos)[i].status == 0)){
                 int j;
                 char nlivro[20];
-                 printf("FER ABRIU!!!!");
                 for(j = 0; j < *quantidadeli; j++) {
                     if ((*livros)[j].codigo == (*emprestimos)[i].codigo_livro) {
                         // Aqui você pode realizar o que deseja quando o código do livro corresponde
@@ -343,14 +343,19 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
             getchar(); // Limpa o buffer
             if(op == 1){
                 char* novadata[20]; 
-                int dif = diferenca_tempo((*emprestimos)[lop].data_emp,(*emprestimos)[lop].data_devp);
+                int dif = comparar((*emprestimos)[lop-1].data_devp);
                
                 if(dif == 0){
-                  
-                    adicionarDias((*emprestimos)[lop].data_devp, 7, *novadata);
-                    //NAO ESTA FUNCIONADO NOVADATA
+                
+                    adicionarDias((*emprestimos)[lop-1].data_devp, 7, &novadata);
+                    strcpy((*emprestimos)[lop-1].data_devp, novadata);
+                    printf("%s",(*emprestimos)[lop-1].data_devp);
+                    reescreverEmprestimo(&*emprestimos, &*quantidadeem);
                     printf("Livro renovado! A nova data de devolução é: %s",novadata);
                    
+                }
+                else{
+                    printf("Multa aplicável.");
                 }
             }
 
@@ -386,20 +391,29 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
 //Função de separação de datas
 
 
-int diferenca_tempo(const char *d1, const char *d2) {
+int comparar(const char *d1) {
     struct tm t1 = {0}, t2 = {0};
     time_t time1, time2;
-    
-    sscanf(d1, "%d-%d-%d", &t1.tm_mday, &t1.tm_mon, &t1.tm_year);
-    sscanf(d2, "%d-%d-%d", &t2.tm_mday, &t2.tm_mon, &t2.tm_year);
-    
-    t1.tm_mon -= 1; t1.tm_year -= 1900;
-    t2.tm_mon -= 1; t2.tm_year -= 1900;
 
+    // Converte a string de data no formato DD-MM-YYYY para a estrutura tm
+    sscanf(d1, "%d-%d-%d", &t1.tm_mday, &t1.tm_mon, &t1.tm_year);
+    t1.tm_mon -= 1;    // Ajusta o mês (tm_mon vai de 0 a 11)
+    t1.tm_year -= 1900; // Ajusta o ano (tm_year conta a partir de 1900)
+
+    // Obtém a data atual
+    time(&time2);
+    t2 = *localtime(&time2);
+
+    // Converte ambas as estruturas tm para time_t
     time1 = mktime(&t1);
     time2 = mktime(&t2);
-
-    return (difftime(time2, time1) / (60 * 60 * 24) > 7) ? 1 : 0;
+    
+    // Compara as datas
+    if (difftime(time1, time2) < 0) {
+        return 1;  // d1 é antes da data atual
+    } else {
+        return 0;  // d1 não é antes da data atual
+    }
 }
 
 int diasNoMes(int mes, int ano) {
@@ -414,7 +428,6 @@ int diasNoMes(int mes, int ano) {
 
 void adicionarDias(char *data, int dias, char *novadata) {
  
-
     int dia, mes, ano;
     sscanf(data, "%d-%d-%d", &dia, &mes, &ano);
 
@@ -434,10 +447,11 @@ void adicionarDias(char *data, int dias, char *novadata) {
         }
     }
 
-    printf("Devolver em: %02d-%02d-%d\n", dia, mes, ano);
+    
 
     // Formatando a nova data
     sprintf(novadata, "%02d-%02d-%d", dia, mes, ano);
+ 
     return;
 }
 
@@ -538,6 +552,42 @@ void reescreverFuncionario(Tfuncionario **funcionarios, int *quantidadefun){
                 (*funcionarios)[i].cargo, 
                 (*funcionarios)[i].total_emprestimos, 
                 (*funcionarios)[i].total_devolucoes);
+    }
+
+    fclose(reescrita);  // Fecha o arquivo
+
+    printf("Arquivo reescrito com sucesso!\n");
+}
+
+
+void reescreverEmprestimo(Temprestimos **emprestimos, int *quantidadeem){
+
+   FILE *reescrita;
+    int i;
+
+    #ifdef _WIN32
+        reescrita = fopen("C:.\\dados\\emprestimos.txt", "w");
+    #else
+        reescrita = fopen("./dados/emprestimos.txt", "w");
+    #endif
+
+    if (reescrita == NULL) {
+        printf("Erro ao abrir o arquivo em modo de edição!\n");
+        return;  // Retorna sem fazer nada se o arquivo não for aberto
+    }
+
+    // Escreve a quantidade de leitores no arquivo
+    fprintf(reescrita, "%d\n", *quantidadeem);  // Escreve o número de leitores no começo do arquivo
+
+    for (i = 0; i < *quantidadeem; i++) {
+        // Escreve os dados de cada leitor no arquivo
+        fprintf(reescrita, "%d %d %d %s %s %d\n",
+                (*emprestimos)[i].codigo, 
+                (*emprestimos)[i].codigo_livro, 
+                (*emprestimos)[i].cod_leitor, 
+                (*emprestimos)[i].data_emp, 
+                (*emprestimos)[i].data_devp,
+                (*emprestimos)[i].status);
     }
 
     fclose(reescrita);  // Fecha o arquivo
