@@ -569,9 +569,13 @@ void adicionarDias(char *data, int dias, char *novadata) {
 
 void escrever_relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo, Tleitor **pleitor, int *numlinhasLeitor, Tfuncionario **pfuncionario, int *numlinhasFuncionario) {
     FILE *relatorio;
-    int op, i = 0, contMa = 0, posiMa = 0, contaMaF = 0, posiMaF = 0;
+    int i = 0, contMa = 0, posiMa = 0, contaMaF = 0, posiMaF = 0;
     int *vcont = (int *)malloc(sizeof(int) * *numlinhasLivro);
     int *movimentacoes = (int *)malloc(sizeof(int) * *numlinhasFuncionario);
+    if(vcont == NULL || movimentacoes == NULL) {
+        printf("Erro em abrir o arquivo!\n");
+        return 1;
+    }
     for (i = 0; i < *numlinhasLivro; i++) {
         *(vcont + i) = 0;
     }
@@ -582,6 +586,10 @@ void escrever_relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preser
     #else
         relatorio = fopen("./dados/relatorio.txt", "w");
     #endif
+    if(relatorio == NULL) {
+        printf("Erro em abrir o relatório!\n");
+        return 1;
+    }
         /* todos os livros disponíveis e emprestados */
         fprintf(relatorio, "Livros disponíveis: \n");
         for (int i = 0; i < *numlinhasLivro; i++) {
@@ -626,19 +634,16 @@ void escrever_relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preser
         fprintf(relatorio, "Funcionário: %s | Total de movimentações: %d\nTotal empréstimos: %d | Total devoluções: %d\n", (*pfuncionario)[posiMaF].nome, contaMaF, (*pfuncionario)[posiMaF].total_emprestimos, (*pfuncionario)[posiMaF].total_devolucoes);
         //leitores com emprestimos ativos e histórico de multas
         
-        fprintf(relatorio, "Leitores com empréstimos ativos: \n");
+        fprintf(relatorio, "\nLeitores com empréstimos ativos: \n");
         for (int i = 0; i < *numlinhasEmprestimo; i++) {
             if (!((*pemprestimo)[i].status))
-                fprintf("Leitor: %s\n", (*pleitor)[((*pemprestimo)[i].cod_leitor - 1)].nome);
+                fprintf(relatorio, "Leitor: %s\n", (*pleitor)[((*pemprestimo)[i].cod_leitor - 1)].nome);
         }
-        fprintf(relatorio, "Leitores com empréstimos ativos: \n");
+        fprintf(relatorio, "\nHistórico de multas: \n");
         for (int i = 0; i < *numlinhasLeitor; i++) {
-            if ((*pleitor)[i].hist_multas > 0)
-                fprintf("Leitor: %s\nQuantidade multas: %d\n", (*pleitor)[i].nome, (*pleitor)[i].hist_multas);
+            if (((*pleitor)[i].hist_multas) != 0)
+                fprintf(relatorio, "Leitor: %s\nQuantidade multas: %d\n", (*pleitor)[i].nome, (*pleitor)[i].hist_multas);
         }
-       
-        free(vcont);
-        free(movimentacoes);
         fclose(relatorio);
         printf("Relatório escrito com sucesso!\n");
 }
