@@ -48,7 +48,7 @@ int diferenca_tempo(const char *d1, const char *d2);
 int diasNoMes(int mes, int ano);
 void adicionarDias(char *data, int dias, char *novadata);
 void relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo);
-void cadastro_funcionario(Tfuncionario *funcionarios, int *quantidade);
+void cadastro_funcionario(Tfuncionario **funcionarios, int *quantidade);
 
 int main() {
     limpar();
@@ -75,10 +75,10 @@ int main() {
          printf("Sucesso! Arquivos inicializados.\n"); 
     }
 
-    printf("\n| BIBLIOTECA VIRTUAL\n\n1 | Novo acesso\n2 | Consulta de acervo\n3 | Relatórios\n4 | Administração \n5 | Sair");
-
    int sl = 0;
    while(sl != 5) {
+    limpar();
+    printf("\n| BIBLIOTECA VIRTUAL\n\n1 | Novo acesso\n2 | Consulta de acervo\n3 | Relatórios\n4 | Administração \n5 | Sair");
     printf("\n\nDigite o código da ação: ");
     scanf("%d", &sl);
     switch (sl)
@@ -476,32 +476,35 @@ void relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int 
 }
 }
 
-void cadastro_funcionario(Tfuncionario *funcionarios, int *quantidade) {
-    Tfuncionario *temp = realloc(funcionarios, (*quantidade + 1) * sizeof(Tfuncionario));
+void cadastro_funcionario(Tfuncionario **funcionarios, int *quantidade) {
+    Tfuncionario *temp = realloc(*funcionarios, (*quantidade + 1) * sizeof(Tfuncionario));
     if (temp == NULL) {
         printf("Erro ao alocar memória.\n");
+        getchar();
         exit(1);
-
+    
+    }
     // Atualiza o ponteiro de funcionarios
-    funcionarios = temp;
+    *funcionarios = temp;
 
     // Adição de 1 funcionário a quantidade
    
     printf("Digite o nome do funcionário: ");
-    scanf("%s", &(funcionarios)[*quantidade].nome);
+    scanf("%s", &(*funcionarios)[*quantidade].nome);
     getchar(); // Limpa o buffer
 
     printf("| 1 - operador |\n| 2 - auxiliar |\n| 3 - administrador |\nDigite o cargo do funcionário: ");
-    scanf("%d", &(funcionarios)[*quantidade].cargo);
+    scanf("%d", &(*funcionarios)[*quantidade].cargo);
     getchar(); // Limpa o buffer
 
     // Gerar código para o funcionário
    
-    (funcionarios)[*quantidade].codigo = *quantidade+1;  // Código sequencial
+    (*funcionarios)[*quantidade].codigo = *quantidade+1;  // Código sequencial
 
-    (funcionarios)[*quantidade].total_emprestimos = 0;
-    (funcionarios)[*quantidade].total_devolucoes = 0;
+    (*funcionarios)[*quantidade].total_emprestimos = 0;
+    (*funcionarios)[*quantidade].total_devolucoes = 0;
 
      (*quantidade)++;
-    }
+     printf("\nFuncionário cadastrado\n");
+     getchar();
 }
