@@ -1,0 +1,19 @@
+Livros disponíveis: 
+Álgebra_Linear - Alfredo_Steinbruch
+Cálculo_1 - James_Stewart
+Sapiens - Yuval_Harari
+1984 - George_Orwell
+
+Livros emprestados: 
+Cálculo_1
+Nação_Dopamina
+
+Livro mais emprestado: 
+Álgebra_Linear com 2 empréstimos
+
+Reservas em aberto: 
+Livro: Nação_Dopamina | Data reserva: 07-11-2024 | Leitor: Fernanda_Pacheco 
+
+Funcionário com maior número de movimentações:
+Funcionário: João_Nunes | Total de movimentações: 25
+Total empréstimos: 10 | Total devoluções: 15

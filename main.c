@@ -47,7 +47,8 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
 int diferenca_tempo(const char *d1, const char *d2);
 int diasNoMes(int mes, int ano);
 void adicionarDias(char *data, int dias, char *novadata);
-void relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo, Tleitor **pleitor);
+void escrever_relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo, Tleitor **pleitor, Tfuncionario **pfuncionario, int *numlinhasFuncionario);
+void relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo, Tleitor **pleitor, Tfuncionario **pfuncionario, int *numlinhasFuncionario);
 void cadastro_funcionario(Tfuncionario **funcionarios, int *quantidade);
 void reescreverFuncionario(Tfuncionario **funcionarios, int *quantidadefun);
 
@@ -95,12 +96,13 @@ int main() {
         }
         break;
     case 3:
-        relatorio(&plivros, &num_linhasLivro, &preserva, &num_linhasReserva, &pemprestimos, &num_linhasEmprestimo, &pleitor);
+        relatorio(&plivros, &num_linhasLivro, &preserva, &num_linhasReserva, &pemprestimos, &num_linhasEmprestimo, &pleitor, &pfuncionario, &num_linhasFuncionario);
         break;
     case 4:
         cadastro_funcionario(&pfuncionario, &num_linhasFuncionario);
         break;
     case 5: 
+        escrever_relatorio(&plivros, &num_linhasLivro, &preserva, &num_linhasReserva, &pemprestimos, &num_linhasEmprestimo, &pleitor, &pfuncionario, &num_linhasFuncionario);
         printf("\nAté a próxima!\n");
         exit(1);
     default:
@@ -448,58 +450,87 @@ void adicionarDias(char *data, int dias, char *novadata) {
     return;
 }
 
-void relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo, Tleitor **pleitor) {
-    int op, i = 0, contMa = 0, posiMa = 0;
+void escrever_relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo, Tleitor **pleitor, Tfuncionario **pfuncionario, int *numlinhasFuncionario) {
+    FILE *relatorio;
+    int op, i = 0, contMa = 0, posiMa = 0, contaMaF = 0, posiMaF = 0;
     int *vcont = (int *)malloc(sizeof(int) * *numlinhasLivro);
+    int *movimentacoes = (int *)malloc(sizeof(int) * *numlinhasFuncionario);
     for (i = 0; i < *numlinhasLivro; i++) {
         *(vcont + i) = 0;
     }
-        
-    /*
-    int *vcontador = (int *)malloc(sizeof(int) * *numlinhasLivro);
-    for (int i = 0; i < *numlinhasLivro; i++)
-        *(vcontador + i) = 0;
-    */
-    printf("\n| RELATÓRIOS\n1 - LIVROS\n");
-    scanf("%d", &op);
-    switch (op) {
-    case 1:
-        
+    for (int i = 0; i < *numlinhasFuncionario; i++)
+        *(movimentacoes + i) = 0;
+    #ifdef _WIN32
+        relatorio = fopen("C:.\\dados\\relatorio.txt", "w");
+    #else
+        relatorio = fopen("./dados/relatorio.txt", "w");
+    #endif
         /* todos os livros disponíveis e emprestados */
-        printf("\nLivros disponíveis: \n");
+        fprintf(relatorio, "Livros disponíveis: \n");
         for (int i = 0; i < *numlinhasLivro; i++) {
             if ((*plivros)[i].status == 1)
-                printf("%s - %s\n", (*plivros)[i].titulo, (*plivros)[i].autor);
+                fprintf(relatorio, "%s - %s\n", (*plivros)[i].titulo, (*plivros)[i].autor);
         }
-        printf("\nLivros emprestados: \n");
-        for (int i = 0; i < *numlinhasLivro; i++) {
-            if ((*plivros)[i].status == 3)
-                printf("%s\n", (*plivros)[i].titulo);
+        fprintf(relatorio, "\nLivros emprestados: \n");
+        for (int i = 0; i < *numlinhasEmprestimo; i++) {
+            if ((*pemprestimo)[i].status == 0)
+                fprintf(relatorio, "%s\n", (*plivros)[((*pemprestimo)[i].codigo_livro - 1)].titulo);
         }
         int livro = 0;
         //livros mais emprestados e reservas em aberto
-        printf("\nLivro mais emprestado: \n");
+        fprintf(relatorio, "\nLivro mais emprestado: \n");
         for (int i = 0; i < *numlinhasEmprestimo; i++) {
             livro = (*pemprestimo)[i].codigo_livro;
             *(vcont + (livro - 1)) += 1;
         }
-        for (int i = 0; i < *numlinhasLivro; i++) {
+        for (int i = 0; i < *numlinhasLivro; i++) { 
             if (*(vcont + i) > contMa) {
                 contMa = *(vcont + i);
                 posiMa = i;
             }
         }
-        printf("%s com %d empréstimos\n", (*plivros)[posiMa].titulo, contMa);
-        printf("\nReservas em aberto: \n");
+        fprintf(relatorio, "%s com %d empréstimos\n", (*plivros)[posiMa].titulo, contMa);
+        fprintf(relatorio, "\nReservas em aberto: \n");
         for (int i = 0; i < *numlinhasReserva; i++) {
-            printf("Livro: %s | Data reserva: %s | Leitor: %s \n", (*plivros)[((*preservas)[i].codigo_livro) - 1].titulo, (*preservas)[i].data_reserva, (*pleitor)[((*preservas)[i].cod_leitor) - 1].nome);
+            fprintf(relatorio, "Livro: %s | Data reserva: %s | Leitor: %s \n", (*plivros)[((*preservas)[i].codigo_livro) - 1].titulo, (*preservas)[i].data_reserva, (*pleitor)[((*preservas)[i].cod_leitor) - 1].nome);
         }
-        break;
-    default:
-        break;
-    }
-
+        fprintf(relatorio, "\nFuncionário com maior número de movimentações:\n");//ver condição para dois com o mesmo número de movimentações
+        for (int i = 0; i < *numlinhasFuncionario; i++)
+            *(movimentacoes + i) = (*pfuncionario)[i].total_devolucoes + (*pfuncionario)[i].total_emprestimos;
+        for (int i = 0; i < *numlinhasFuncionario; i++) {
+            if (*(movimentacoes + i) > contaMaF) {
+                contaMaF = *(movimentacoes + i);
+                posiMaF = i;
+            }
+        }
+        fprintf(relatorio, "Funcionário: %s | Total de movimentações: %d\nTotal empréstimos: %d | Total devoluções: %d", (*pfuncionario)[posiMaF].nome, contaMaF, (*pfuncionario)[posiMaF].total_emprestimos, (*pfuncionario)[posiMaF].total_devolucoes);
+        //leitores com emprestimos ativos e histórico de multas
+        free(vcont);
+        free(movimentacoes);
+        fclose(relatorio);
+        printf("Relatório escrito com sucesso!\n");
 }
+
+
+void relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo, Tleitor **pleitor, Tfuncionario **pfuncionario, int *numlinhasFuncionario) {
+    FILE *relatorio;
+    #ifdef _WIN32
+        relatorio = fopen("C:.\\dados\\relatorio.txt", "r");
+    #else
+        relatorio = fopen("./dados/relatorio.txt", "r");
+    #endif
+    if (relatorio == NULL) {
+        perror("Erro ao abrir o arquivo");
+        return 1;
+    }
+    char buffer[256];
+    while (fgets(buffer, sizeof(buffer), relatorio) != NULL) {
+        printf("%s", buffer);
+    }
+    printf("\n");
+    fclose(relatorio);
+}
+
 
 void cadastro_funcionario(Tfuncionario **funcionarios, int *quantidade) {
     Tfuncionario *temp = realloc(*funcionarios, (*quantidade + 1) * sizeof(Tfuncionario));
@@ -535,8 +566,7 @@ void cadastro_funcionario(Tfuncionario **funcionarios, int *quantidade) {
     getchar();
 }
 
-void reescreverFuncionario(Tfuncionario **funcionarios, int *quantidadefun){
-
+void reescreverFuncionario(Tfuncionario **funcionarios, int *quantidadefun) {
    FILE *reescrita;
     int i;
 
@@ -563,9 +593,11 @@ void reescreverFuncionario(Tfuncionario **funcionarios, int *quantidadefun){
                 (*funcionarios)[i].total_emprestimos, 
                 (*funcionarios)[i].total_devolucoes);
     }
-
     fclose(reescrita);  // Fecha o arquivo
-
     printf("Arquivo reescrito com sucesso!\n");
 }
 
+
+void consulta_acervo(int *quantidade){
+    return 0;
+}
