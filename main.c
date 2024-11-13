@@ -490,16 +490,16 @@ void cadastro_funcionario(Tfuncionario **funcionarios, int *quantidade) {
     // Adição de 1 funcionário a quantidade
    
     printf("Digite o nome do funcionário: ");
-    scanf("%s", &(*funcionarios)[*quantidade].nome);
+    scanf("%s", (*funcionarios)[*quantidade].nome);
     getchar(); // Limpa o buffer
 
-    printf("| 1 - operador |\n| 2 - auxiliar |\n| 3 - administrador |\nDigite o cargo do funcionário: ");
+    printf(" 1 | operador \n 2 | auxiliar \n 3 | administrador \n\nDigite o cargo do funcionário: ");
     scanf("%d", &(*funcionarios)[*quantidade].cargo);
     getchar(); // Limpa o buffer
 
     // Gerar código para o funcionário
    
-    (*funcionarios)[*quantidade].codigo = *quantidade+1;  // Código sequencial
+    (*funcionarios)[*quantidade].codigo = *quantidade + 1;  // Código sequencial
 
     (*funcionarios)[*quantidade].total_emprestimos = 0;
     (*funcionarios)[*quantidade].total_devolucoes = 0;
