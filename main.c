@@ -49,6 +49,7 @@ int diasNoMes(int mes, int ano);
 void adicionarDias(char *data, int dias, char *novadata);
 void relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo);
 void cadastro_funcionario(Tfuncionario **funcionarios, int *quantidade);
+void reescreverFuncionario(Tfuncionario **funcionarios, int *quantidadefun);
 
 int main() {
     limpar();
@@ -505,6 +506,42 @@ void cadastro_funcionario(Tfuncionario **funcionarios, int *quantidade) {
     (*funcionarios)[*quantidade].total_devolucoes = 0;
 
      (*quantidade)++;
-     printf("\nFuncionário cadastrado\n");
-     getchar();
+    reescreverFuncionario(&*funcionarios, &*quantidade);
+    printf("\nFuncionário cadastrado\n");
+    getchar();
 }
+
+void reescreverFuncionario(Tfuncionario **funcionarios, int *quantidadefun){
+
+   FILE *reescrita;
+    int i;
+
+    #ifdef _WIN32
+        reescrita = fopen("C:.\\dados\\funcionarios.txt", "w");
+    #else
+        reescrita = fopen("./dados/funcionarios.txt", "w");
+    #endif
+
+    if (reescrita == NULL) {
+        printf("Erro ao abrir o arquivo em modo de edição!\n");
+        return;  // Retorna sem fazer nada se o arquivo não for aberto
+    }
+
+    // Escreve a quantidade de leitores no arquivo
+    fprintf(reescrita, "%d\n", *quantidadefun);  // Escreve o número de leitores no começo do arquivo
+
+    for (i = 0; i < *quantidadefun; i++) {
+        // Escreve os dados de cada leitor no arquivo
+        fprintf(reescrita, "%d %s %d %d %d\n",
+                (*funcionarios)[i].codigo, 
+                (*funcionarios)[i].nome, 
+                (*funcionarios)[i].cargo, 
+                (*funcionarios)[i].total_emprestimos, 
+                (*funcionarios)[i].total_devolucoes);
+    }
+
+    fclose(reescrita);  // Fecha o arquivo
+
+    printf("Arquivo reescrito com sucesso!\n");
+}
+
