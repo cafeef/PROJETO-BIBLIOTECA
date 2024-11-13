@@ -47,7 +47,7 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
 int diferenca_tempo(const char *d1, const char *d2);
 int diasNoMes(int mes, int ano);
 void adicionarDias(char *data, int dias, char *novadata);
-void relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo);
+void relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo, Tleitor **pleitor);
 void cadastro_funcionario(Tfuncionario **funcionarios, int *quantidade);
 void reescreverFuncionario(Tfuncionario **funcionarios, int *quantidadefun);
 
@@ -78,7 +78,7 @@ int main() {
 
    int sl = 0;
    while(sl != 5) {
-    limpar();
+    //limpar();
     printf("\n| BIBLIOTECA VIRTUAL\n\n1 | Novo acesso\n2 | Consulta de acervo\n3 | Relatórios\n4 | Administração \n5 | Sair");
     printf("\n\nDigite o código da ação: ");
     scanf("%d", &sl);
@@ -87,20 +87,27 @@ int main() {
     case 1:
         novoacesso(&pleitor, &num_linhasLeitor, &pemprestimos, &num_linhasEmprestimo, &plivros, &num_linhasLivro);
         break;
+    case 2:
+        printf("\nLivros disponíveis: \n");
+        for (int i = 0; i < num_linhasLivro; i++) {
+            if (plivros[i].status == 1)
+                printf("%s - %s\n", plivros[i].titulo, plivros[i].autor);
+        }
+        break;
     case 3:
-        relatorio(&plivros, &num_linhasLivro, &preserva, &num_linhasReserva, &pemprestimos, &num_linhasEmprestimo);
+        relatorio(&plivros, &num_linhasLivro, &preserva, &num_linhasReserva, &pemprestimos, &num_linhasEmprestimo, &pleitor);
         break;
     case 4:
         cadastro_funcionario(&pfuncionario, &num_linhasFuncionario);
         break;
     case 5: 
         printf("\nAté a próxima!\n");
-        break;
+        exit(1);
     default:
         printf("Opção inválida!\n");
         break;
     }
-    
+    Sleep(10000);
    }
 }
 
@@ -441,11 +448,18 @@ void adicionarDias(char *data, int dias, char *novadata) {
     return;
 }
 
-void relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo) {
-    int op;
+void relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo, Tleitor **pleitor) {
+    int op, i = 0, contMa = 0, posiMa = 0;
+    int *vcont = (int *)malloc(sizeof(int) * *numlinhasLivro);
+    for (i = 0; i < *numlinhasLivro; i++) {
+        *(vcont + i) = 0;
+    }
+        
+    /*
     int *vcontador = (int *)malloc(sizeof(int) * *numlinhasLivro);
     for (int i = 0; i < *numlinhasLivro; i++)
         *(vcontador + i) = 0;
+    */
     printf("\n| RELATÓRIOS\n1 - LIVROS\n");
     scanf("%d", &op);
     switch (op) {
@@ -454,27 +468,37 @@ void relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int 
         /* todos os livros disponíveis e emprestados */
         printf("\nLivros disponíveis: \n");
         for (int i = 0; i < *numlinhasLivro; i++) {
-            if ((*plivros)[i].status)
-                printf("%s\n", (*plivros)[i].titulo);
+            if ((*plivros)[i].status == 1)
+                printf("%s - %s\n", (*plivros)[i].titulo, (*plivros)[i].autor);
         }
         printf("\nLivros emprestados: \n");
         for (int i = 0; i < *numlinhasLivro; i++) {
             if ((*plivros)[i].status == 3)
                 printf("%s\n", (*plivros)[i].titulo);
         }
-        printf("\n");
+        int livro = 0;
         //livros mais emprestados e reservas em aberto
-        int livro;
-        int j;
+        printf("\nLivro mais emprestado: \n");
         for (int i = 0; i < *numlinhasEmprestimo; i++) {
-            printf("%d ", (*pemprestimo)[i].codigo_livro);
-            
+            livro = (*pemprestimo)[i].codigo_livro;
+            *(vcont + (livro - 1)) += 1;
+        }
+        for (int i = 0; i < *numlinhasLivro; i++) {
+            if (*(vcont + i) > contMa) {
+                contMa = *(vcont + i);
+                posiMa = i;
+            }
+        }
+        printf("%s com %d empréstimos\n", (*plivros)[posiMa].titulo, contMa);
+        printf("\nReservas em aberto: \n");
+        for (int i = 0; i < *numlinhasReserva; i++) {
+            printf("Livro: %s | Data reserva: %s | Leitor: %s \n", (*plivros)[((*preservas)[i].codigo_livro) - 1].titulo, (*preservas)[i].data_reserva, (*pleitor)[((*preservas)[i].cod_leitor) - 1].nome);
+        }
         break;
     default:
         break;
     }
 
-}
 }
 
 void cadastro_funcionario(Tfuncionario **funcionarios, int *quantidade) {
