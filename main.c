@@ -48,10 +48,12 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
 int comparar(const char *d1);
 int diasNoMes(int mes, int ano);
 void adicionarDias(char *data, int dias, char *novadata);
-void escrever_relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo, Tleitor **pleitor, Tfuncionario **pfuncionario, int *numlinhasFuncionario);
-void relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo, Tleitor **pleitor, Tfuncionario **pfuncionario, int *numlinhasFuncionario);
+void escrever_relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo, Tleitor **pleitor, int *numlinhasLeitor, Tfuncionario **pfuncionario, int *numlinhasFuncionario);
+void relatorio();
 void cadastro_funcionario(Tfuncionario **funcionarios, int *quantidade);
 void reescreverFuncionario(Tfuncionario **funcionarios, int *quantidadefun);
+void cadastrar_emprestimo(Temprestimos **emprestimos, int *quantidade, int codl, int codleitor);
+int diferenca(const char *data);
 
 int main() {
     limpar();
@@ -80,7 +82,7 @@ int main() {
 
    int sl = 0;
    while(sl != 5) {
-    //limpar();
+    limpar();
     printf("\n| BIBLIOTECA VIRTUAL\n\n1 | Novo acesso\n2 | Consulta de acervo\n3 | Relatórios\n4 | Administração \n5 | Sair");
     printf("\n\nDigite o código da ação: ");
     scanf("%d", &sl);
@@ -90,27 +92,24 @@ int main() {
         novoacesso(&pleitor, &num_linhasLeitor, &pemprestimos, &num_linhasEmprestimo, &plivros, &num_linhasLivro);
         break;
     case 2:
-        printf("\nLivros disponíveis: \n");
-        for (int i = 0; i < num_linhasLivro; i++) {
-            if (plivros[i].status == 1)
-                printf("%s - %s\n", plivros[i].titulo, plivros[i].autor);
-        }
+        consulta_acervo(&plivros, &num_linhasLivro);
+        Sleep(5000);
         break;
     case 3:
-        relatorio(&plivros, &num_linhasLivro, &preserva, &num_linhasReserva, &pemprestimos, &num_linhasEmprestimo, &pleitor, &pfuncionario, &num_linhasFuncionario);
+        relatorio();
+        Sleep(10000);
         break;
     case 4:
         cadastro_funcionario(&pfuncionario, &num_linhasFuncionario);
         break;
     case 5: 
-        escrever_relatorio(&plivros, &num_linhasLivro, &preserva, &num_linhasReserva, &pemprestimos, &num_linhasEmprestimo, &pleitor, &pfuncionario, &num_linhasFuncionario);
+        escrever_relatorio(&plivros, &num_linhasLivro, &preserva, &num_linhasReserva, &pemprestimos, &num_linhasEmprestimo, &pleitor, &num_linhasLeitor, &pfuncionario, &num_linhasFuncionario);
         printf("\nAté a próxima!\n");
         exit(1);
     default:
         printf("Opção inválida!\n");
         break;
     }
-    Sleep(10000);
    }
 }
 
@@ -308,9 +307,11 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
     printf("| NOVO ACESSO\n\n1 | Usuário existente\n2 | Adicionar usuário\n\nDigite a operação: ");
     scanf("%d", &op);
     getchar(); // Limpa o buffer
+   
     if (op == 1) {
         limpar();
         printf("| NOVO ACESSO\n\nDigite o código do usuário:");
+        op = 0;
         scanf("%d", &op);
         getchar(); // Limpa o buffer
 
@@ -321,33 +322,87 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
         int cod = op-1;
 
         printf("\n\n1 | Empréstimo\n2 | Renovar/Devolver livro");
+        op = 0;
         scanf("%d", &op);
         getchar(); // Limpa o buffer
+         printf("%d", op);
+        if(op==1){
+            int i, total;
+            total =0;
+            limpar();
+             
+            for(i=0;i<*quantidadeem; i++){
+               if(((*emprestimos)[i].cod_leitor == (*leitores)[cod].codigo) && ((*emprestimos)[i].status == 0)){
+                total = total+1;
+                int j;
+               }
+            }
+             
+            if(total == 4){
+                printf("Cota máxima de empréstimos realizada.\nVocê possuí 4 livros locados;\n\nDevolva algum livro antes de locar outro.");
+            }
+            else{
+                int cod2;
+                
+                 printf("%s, você possui %d/4 livro(s) locados.",  (*leitores)[cod].nome, total);
+                 printf("\nDigite o código do livro que deseja locar: ");
+                
+                scanf("%d", &cod2);
+                getchar(); // Limpa o buffer
+                
+                
+
+                int disp = (*livros)[cod2-1].status;
+                if(disp == 1){
+                    printf("Confirmar locação de '%s', para %s?", (*livros)[cod2-1].titulo, (*leitores)[cod].nome);
+                     getchar();
+                     cadastrar_emprestimo(&*emprestimos, &*quantidadeem, cod2-1, (*leitores)[cod].codigo);
+                     (*livros)[cod2-1].codigo = 3;
+                     
+                }
+                if(disp ==3){
+                    printf("O Livro está emprestado e já possui uma reserva pendente.");
+                     getchar();
+                }
+                if(disp==2){
+                    printf("O Livro está indisponível no momento, porém pode ser reservado.");
+                     getchar();;
+                }
+                
+                
+            }
+           
+
+        }
+        
         if(op==2){
             int i;
             limpar();
             printf("Livros locados - %s",  (*leitores)[cod].nome);
             printf("\n");
+            int total = 0;
             for(i=0;i<*quantidadeem; i++){
-                printf("%d", (*emprestimos)[i].cod_leitor);
                if(((*emprestimos)[i].cod_leitor == (*leitores)[cod].codigo) && ((*emprestimos)[i].status == 0)){
+                total++;
                 int j;
                 char nlivro[20];
                 for(j = 0; j < *quantidadeli; j++) {
                     if ((*livros)[j].codigo == (*emprestimos)[i].codigo_livro) {
-                        // Aqui você pode realizar o que deseja quando o código do livro corresponde
                     strcpy(nlivro, (*livros)[j].titulo);
                     }
             }
 
                 printf("\n%d | Livro: %s | Dat. empr: %s - Dat. dev: %s",(*emprestimos)[i].codigo, nlivro, (*emprestimos)[i].data_emp,(*emprestimos)[i].data_devp);
             }
-            int lop;
+            if(total!=0){
+                int lop;
             printf("\nDigite o código do livro para operação: ");
+             op = 0;
             scanf("%d", &lop);
             getchar(); // Limpa o buffer
 
             printf("\n\n1 | Renovar empréstimo\n2 | Devolver livro ");
+             op = 0;
             scanf("%d", &op);
             getchar(); // Limpa o buffer
             if(op == 1){
@@ -364,14 +419,59 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
                    
                 }
                 else{
-                    printf("Multa aplicável.");
+                    limpar();
+                    int dias = diferenca((*emprestimos)[lop-1].data_devp);
+                    int multa = dias*2;
+                    printf("Não é possível renovar seu empréstimo.\nMulta aplicável (%d dias em atraso)\nMulta em aberto de R$%.2f.\n\n",dias, (float)multa);
+                    printf("\nPressione qualquer tecla para pagar multa e devolver");
+                    getchar();  // Aguarda o usuário pressionar uma tecla antes de continuar
+                    (*emprestimos)[lop-1].status = 1;
+                    reescreverEmprestimo(&*emprestimos, &*quantidadeem);
+                    printf("Livro devolvido! Obrigado.");
+                     op = 0;
                 }
+            }
+            else{
+
+                char* novadata[20]; 
+                int dif = comparar((*emprestimos)[lop-1].data_devp);
+               
+                if(dif == 0){
+                
+                    (*emprestimos)[lop-1].status = 1;
+                    reescreverEmprestimo(&*emprestimos, &*quantidadeem);
+                    printf("Livro devolvido! Obrigado.");
+                   
+                }
+                else{
+                    limpar();
+                    int dias = diferenca((*emprestimos)[lop-1].data_devp);
+                    int multa = dias*2;
+                    printf("Não é possível renovar seu empréstimo.\nMulta aplicável (%d dias em atraso)\nMulta em aberto de R$%.2f.\n\n",dias, (float)multa);
+                    printf("\nPressione qualquer tecla para pagar multa e devolver");
+                    getchar();  // Aguarda o usuário pressionar uma tecla antes de continuar
+                    (*emprestimos)[lop-1].status = 1;
+                    reescreverEmprestimo(&*emprestimos, &*quantidadeem);
+                    printf("Livro devolvido! Obrigado.");
+                     op = 0;
+                    
+
+                }
+
             }
 
         }
+        else{
+            printf("Usuário sem livros locados no momento.");
+            printf("\nPressione qualquer tecla para voltar ao menu.");
+            op = 0;
+            getchar();  // Aguarda o usuário pressionar uma tecla antes de continuar
+            limpar();
+            return;
+        }}
+            
 
-        printf("\nPressione qualquer tecla para voltar ao menu...\n");
-        getchar();  // Aguarda o usuário pressionar uma tecla antes de continuar
+   
 
 
     } else if (op == 2) {
@@ -391,11 +491,13 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
         reescreverLeitor(&*leitores, &*quantidade);
 
         // Você pode adicionar aqui um "pause" se necessário
-        printf("\nPressione qualquer tecla para voltar ao menu...\n");
+        printf("\nPressione qualquer tecla para voltar ao menu...");
         getchar();  // Aguarda o usuário pressionar uma tecla antes de continuar
     }
 }
 }
+
+
 
 //Função de separação de datas
 
@@ -464,7 +566,7 @@ void adicionarDias(char *data, int dias, char *novadata) {
     return;
 }
 
-void escrever_relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo, Tleitor **pleitor, Tfuncionario **pfuncionario, int *numlinhasFuncionario) {
+void escrever_relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo, Tleitor **pleitor, int *numlinhasLeitor, Tfuncionario **pfuncionario, int *numlinhasFuncionario) {
     FILE *relatorio;
     int op, i = 0, contMa = 0, posiMa = 0, contaMaF = 0, posiMaF = 0;
     int *vcont = (int *)malloc(sizeof(int) * *numlinhasLivro);
@@ -508,6 +610,7 @@ void escrever_relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preser
         for (int i = 0; i < *numlinhasReserva; i++) {
             fprintf(relatorio, "Livro: %s | Data reserva: %s | Leitor: %s \n", (*plivros)[((*preservas)[i].codigo_livro) - 1].titulo, (*preservas)[i].data_reserva, (*pleitor)[((*preservas)[i].cod_leitor) - 1].nome);
         }
+        
         fprintf(relatorio, "\nFuncionário com maior número de movimentações:\n");//ver condição para dois com o mesmo número de movimentações
         for (int i = 0; i < *numlinhasFuncionario; i++)
             *(movimentacoes + i) = (*pfuncionario)[i].total_devolucoes + (*pfuncionario)[i].total_emprestimos;
@@ -516,9 +619,23 @@ void escrever_relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preser
                 contaMaF = *(movimentacoes + i);
                 posiMaF = i;
             }
+            
         }
-        fprintf(relatorio, "Funcionário: %s | Total de movimentações: %d\nTotal empréstimos: %d | Total devoluções: %d", (*pfuncionario)[posiMaF].nome, contaMaF, (*pfuncionario)[posiMaF].total_emprestimos, (*pfuncionario)[posiMaF].total_devolucoes);
+        
+        fprintf(relatorio, "Funcionário: %s | Total de movimentações: %d\nTotal empréstimos: %d | Total devoluções: %d\n", (*pfuncionario)[posiMaF].nome, contaMaF, (*pfuncionario)[posiMaF].total_emprestimos, (*pfuncionario)[posiMaF].total_devolucoes);
         //leitores com emprestimos ativos e histórico de multas
+        
+        fprintf(relatorio, "Leitores com empréstimos ativos: \n");
+        for (int i = 0; i < *numlinhasEmprestimo; i++) {
+            if (!((*pemprestimo)[i].status))
+                fprintf("Leitor: %s\n", (*pleitor)[((*pemprestimo)[i].cod_leitor - 1)].nome);
+        }
+        fprintf(relatorio, "Leitores com empréstimos ativos: \n");
+        for (int i = 0; i < *numlinhasLeitor; i++) {
+            if ((*pleitor)[i].hist_multas > 0)
+                fprintf("Leitor: %s\nQuantidade multas: %d\n", (*pleitor)[i].nome, (*pleitor)[i].hist_multas);
+        }
+       
         free(vcont);
         free(movimentacoes);
         fclose(relatorio);
@@ -526,7 +643,7 @@ void escrever_relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preser
 }
 
 
-void relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo, Tleitor **pleitor, Tfuncionario **pfuncionario, int *numlinhasFuncionario) {
+void relatorio() {
     FILE *relatorio;
     #ifdef _WIN32
         relatorio = fopen("C:.\\dados\\relatorio.txt", "r");
@@ -577,6 +694,38 @@ void cadastro_funcionario(Tfuncionario **funcionarios, int *quantidade) {
      (*quantidade)++;
     reescreverFuncionario(&*funcionarios, &*quantidade);
     printf("\nFuncionário cadastrado\n");
+    getchar();
+}
+
+void cadastrar_emprestimo(Temprestimos **emprestimos, int *quantidade, int codl, int codleitor) {
+    Temprestimos *temp = realloc(*emprestimos, (*quantidade + 1) * sizeof(Temprestimos));
+    if (temp == NULL) {
+        printf("Erro ao alocar memória.\n");
+        getchar();
+        exit(1);
+    
+    }
+    // Atualiza o ponteiro de funcionarios
+    *emprestimos = temp;
+
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    char data[20];
+    // Formatar a data como DD-MM-YYYY
+    sprintf(data, "%02d-%02d-%d", tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900);
+
+
+    (*emprestimos)[*quantidade].codigo = *quantidade + 1;  // Código sequencial
+    (*emprestimos)[*quantidade].codigo_livro = codl;
+    (*emprestimos)[*quantidade].cod_leitor = codleitor;
+    strcpy((*emprestimos)[*quantidade].data_emp, data);
+    char novadata[20];
+    adicionarDias((*emprestimos)[*quantidade].data_emp, 7, &novadata);
+    strcpy((*emprestimos)[*quantidade].data_devp, novadata);
+    (*emprestimos)[*quantidade].status = 0;
+     (*quantidade)++;
+   
+    reescreverEmprestimo(&*emprestimos, &*quantidade);
     getchar();
 }
 
@@ -646,43 +795,65 @@ void reescreverEmprestimo(Temprestimos **emprestimos, int *quantidadeem){
     printf("Arquivo reescrito com sucesso!\n");
 }
 
+int diferenca(const char *data) {
+    struct tm dataFornecida = {0};
+    sscanf(data, "%d-%d-%d", &dataFornecida.tm_mday, &dataFornecida.tm_mon, &dataFornecida.tm_year);
+    dataFornecida.tm_year -= 1900; // Ajustar ano
+    dataFornecida.tm_mon -= 1;     // Ajustar mês
 
-void reescreverEmprestimo(Temprestimos **emprestimos, int *quantidadeem){
+    time_t agora = time(NULL);
+    time_t timeFornecida = mktime(&dataFornecida);
 
-   FILE *reescrita;
-    int i;
-
-    #ifdef _WIN32
-        reescrita = fopen("C:.\\dados\\emprestimos.txt", "w");
-    #else
-        reescrita = fopen("./dados/emprestimos.txt", "w");
-    #endif
-
-    if (reescrita == NULL) {
-        printf("Erro ao abrir o arquivo em modo de edição!\n");
-        return;  // Retorna sem fazer nada se o arquivo não for aberto
-    }
-
-    // Escreve a quantidade de leitores no arquivo
-    fprintf(reescrita, "%d\n", *quantidadeem);  // Escreve o número de leitores no começo do arquivo
-
-    for (i = 0; i < *quantidadeem; i++) {
-        // Escreve os dados de cada leitor no arquivo
-        fprintf(reescrita, "%d %d %d %s %s %d\n",
-                (*emprestimos)[i].codigo, 
-                (*emprestimos)[i].codigo_livro, 
-                (*emprestimos)[i].cod_leitor, 
-                (*emprestimos)[i].data_emp, 
-                (*emprestimos)[i].data_devp,
-                (*emprestimos)[i].status);
-    }
-
-    fclose(reescrita);  // Fecha o arquivo
-
-    printf("Arquivo reescrito com sucesso!\n");
+    return (difftime(agora, timeFornecida) / (60 * 60 * 24));
 }
 
 
-void consulta_acervo(int *quantidade){
+void consulta_acervo(Tlivro **plivros, int *num_linhasLivro){
+    limpar();
+    getchar(); // Limpa o buffer
+    int op, tem_algo = 0;
+    printf("| CONSULTAR ACERVO\n\n1 | Todos os livros\n2 | Livros disponíveis\n3 | Livros emprestados\n4 | Livros reservados\n\nDigite a operação: ");
+    scanf("%d", &op);
+    getchar(); // Limpa o buffer
+    switch(op){
+    case 1:
+        printf("\nTodos os Livros:\n");
+        for (int i = 0; i < *num_linhasLivro; i++)
+            printf("%s - %s\n", (*plivros)[i].titulo, (*plivros)[i].autor);
+        break;
+    case 2:
+        printf("\nLivros disponíveis:\n");
+        for (int i = 0; i < *num_linhasLivro; i++) {
+            if ((*plivros)[i].status == 1){
+                tem_algo = 1;
+                printf("%s - %s\n", (*plivros)[i].titulo, (*plivros)[i].autor);
+            }
+        }
+        break;
+    case 3:
+        printf("\nLivros emprestados:\n");
+        for (int i = 0; i < *num_linhasLivro; i++) {
+            if ((*plivros)[i].status == 3){
+                tem_algo = 1;
+                printf("%s - %s\n", (*plivros)[i].titulo, (*plivros)[i].autor);
+            }
+        }
+        break;
+    case 4:
+        printf("\nLivros reservados:\n");
+        for (int i = 0; i < *num_linhasLivro; i++) {
+            if ((*plivros)[i].status == 2){
+                tem_algo = 1;
+                printf("%s - %s\n", (*plivros)[i].titulo, (*plivros)[i].autor);
+            }
+        }
+        break;
+    case 5: 
+        printf("\nConsulta cancelada!\n");
+        break;
+    default:
+        printf("Opção inválida!\n");
+        break;
+    }
     return 0;
 }

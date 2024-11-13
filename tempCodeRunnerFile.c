@@ -1,2 +1,1 @@
-
-                (*funcionarios)[i].nome, 
+r
