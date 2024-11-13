@@ -54,6 +54,7 @@ void cadastro_funcionario(Tfuncionario **funcionarios, int *quantidade);
 void reescreverFuncionario(Tfuncionario **funcionarios, int *quantidadefun);
 void cadastrar_emprestimo(Temprestimos **emprestimos, int *quantidade, int codl, int codleitor);
 int diferenca(const char *data);
+void consulta_acervo(Tlivro **plivros, int *num_linhasLivro,Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo);
 
 int main() {
     limpar();
@@ -92,7 +93,7 @@ int main() {
         novoacesso(&pleitor, &num_linhasLeitor, &pemprestimos, &num_linhasEmprestimo, &plivros, &num_linhasLivro);
         break;
     case 2:
-        consulta_acervo(&plivros, &num_linhasLivro);
+        consulta_acervo(&plivros, &num_linhasLivro, &preserva, &num_linhasReserva, &pemprestimos, &num_linhasEmprestimo);
         Sleep(5000);
         break;
     case 3:
@@ -808,11 +809,11 @@ int diferenca(const char *data) {
 }
 
 
-void consulta_acervo(Tlivro **plivros, int *num_linhasLivro){
+void consulta_acervo(Tlivro **plivros, int *num_linhasLivro,Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo){
     limpar();
     getchar(); // Limpa o buffer
     int op, tem_algo = 0;
-    printf("| CONSULTAR ACERVO\n\n1 | Todos os livros\n2 | Livros disponíveis\n3 | Livros emprestados\n4 | Livros reservados\n\nDigite a operação: ");
+    printf("| CONSULTAR ACERVO\n\n1 | Todos os livros\n2 | Livros disponíveis\n3 | Livros emprestados\n4 | Livros reservados\n5 | Cancelar consulta\n\nDigite a operação: ");
     scanf("%d", &op);
     getchar(); // Limpa o buffer
     switch(op){
@@ -828,25 +829,26 @@ void consulta_acervo(Tlivro **plivros, int *num_linhasLivro){
                 tem_algo = 1;
                 printf("%s - %s\n", (*plivros)[i].titulo, (*plivros)[i].autor);
             }
-        }
+        } if (tem_algo == 0)
+            printf("\nNenhum item para mostrar.\n");
         break;
     case 3:
         printf("\nLivros emprestados:\n");
-        for (int i = 0; i < *num_linhasLivro; i++) {
-            if ((*plivros)[i].status == 3){
+        for (int i = 0; i < *numlinhasEmprestimo; i++) {
+            if ((*pemprestimo)[i].status == 0){
                 tem_algo = 1;
-                printf("%s - %s\n", (*plivros)[i].titulo, (*plivros)[i].autor);
+                printf("%s - %s\n", (*plivros)[((*pemprestimo)[i].codigo_livro - 1)].titulo, (*plivros)[((*pemprestimo)[i].codigo_livro - 1)].autor);
             }
-        }
+        } if (tem_algo == 0)
+            printf("\nNenhum item para mostrar.\n");
         break;
     case 4:
         printf("\nLivros reservados:\n");
-        for (int i = 0; i < *num_linhasLivro; i++) {
-            if ((*plivros)[i].status == 2){
+        for (int i = 0; i < *numlinhasReserva; i++) {
                 tem_algo = 1;
-                printf("%s - %s\n", (*plivros)[i].titulo, (*plivros)[i].autor);
-            }
-        }
+                printf("%s - %s\n", (*plivros)[((*preservas)[i].codigo_livro - 1)].titulo, (*plivros)[((*preservas)[i].codigo_livro - 1)].autor);
+        } if (tem_algo == 0)
+            printf("\nNenhum item para mostrar.\n");
         break;
     case 5: 
         printf("\nConsulta cancelada!\n");
