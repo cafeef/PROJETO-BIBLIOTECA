@@ -1,10 +1,14 @@
 #include <stdio.h>
-#include <time.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #ifdef _WIN32
-#include <windows.h>
+    #include <time.h>
+    #include <windows.h>
+    #define sleep(seconds) Sleep((seconds) * 1000) // Converte segundos para milissegundos
+#elif __linux__
+    #include <unistd.h>
 #endif
 
 typedef struct livros {
@@ -113,7 +117,7 @@ int main() {
             }
             if (retornocod) {
                 printf("Bem vindo(a), %s!\n", pfuncionario[cod-1].nome);
-                Sleep(2000);
+                sleep(2);
                 break;
             }
             else
@@ -151,7 +155,7 @@ int main() {
                 break;
             case 2:
                 relatorio();
-                Sleep(10000);
+                sleep(10);
                 break;
             case 3:
                 printf("| CONFIGURAÇÃO\n1 - LIVROS\n2 - LEITOR\nDigite a configuração que deseja: ");
@@ -237,7 +241,7 @@ int main() {
         break;
     case 2:
         consulta_acervo(&plivros, &num_linhasLivro, &preserva, &num_linhasReserva, &pemprestimos, &num_linhasEmprestimo);
-        Sleep(5000);
+        sleep(5);
         break;
     case 3: 
         escrever_relatorio(&plivros, &num_linhasLivro, &preserva, &num_linhasReserva, &pemprestimos, &num_linhasEmprestimo, &pleitor, &num_linhasLeitor, &pfuncionario, &num_linhasFuncionario);
@@ -262,32 +266,6 @@ void limpar() {
         system("clear");  // Limpa o terminal no Linux/macOS
     #endif
 }
-/*
-void adicionarLivroDinamicamente(Tlivro **livros, int *quantidade) {
-    // Realoca memória para armazenar mais um livro
-    *livros = realloc(*livros, (*quantidade + 1) * sizeof(Tlivro));
-    if (*livros == NULL) {
-        printf("Erro ao alocar memória.\n");
-        exit(1);
-    }
-
-    // Solicita informações do livro
-    printf("Digite o título do livro: ");
-    fgets((*livros)[*quantidade].titulo, 100, stdin);
-    (*livros)[*quantidade].titulo[strcspn((*livros)[*quantidade].titulo, "\n")] = 0;
-
-    printf("Digite o autor do livro: ");
-    fgets((*livros)[*quantidade].autor, 100, stdin);
-    (*livros)[*quantidade].autor[strcspn((*livros)[*quantidade].autor, "\n")] = 0;
-
-    printf("Digite o gênero: ");
-    scanf("%d", &(*livros)[*quantidade].genero);
-    getchar(); // Limpa o buffer
-
-    // Incrementa a quantidade de livros
-    (*quantidade)++;
-}
-*/
 
 Tlivro *inicializa_livros (int *num_linhas) {
     FILE *livros;

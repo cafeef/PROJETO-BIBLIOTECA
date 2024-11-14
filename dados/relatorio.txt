@@ -1,4 +1,5 @@
 Livros disponíveis: 
+1984 - George_Orwell
 ED1 - Simone
 
 Livros emprestados: 
@@ -9,7 +10,7 @@ Sapiens
 Álgebra_Linear
 
 Livro mais emprestado: 
-1984 com 4 empréstimos
+1984 com 5 empréstimos
 
 Reservas em aberto: 
 Livro: Nação_Dopamina | Data reserva: 07-11-2024 | Leitor: Fernanda_Pacheco 
@@ -23,8 +24,8 @@ Livro: Álgebra_Linear | Data reserva: 14-11-2024 | Leitor: Fernanda_Pacheco
 Livro: Álgebra_Linear | Data reserva: 14-11-2024 | Leitor: Fernanda_Pacheco 
 
 Funcionário com maior número de movimentações:
-Funcionário: Mariana_Ferreira | Total de movimentações: 35
-Total empréstimos: 23 | Total devoluções: 12
+Funcionário: Mariana_Ferreira | Total de movimentações: 37
+Total empréstimos: 25 | Total devoluções: 12
 
 Leitores com empréstimos ativos: 
 Leitor: Fernanda_Pacheco
