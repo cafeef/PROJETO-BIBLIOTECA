@@ -2,13 +2,13 @@ Livros disponíveis:
 
 Livros emprestados: 
 
-Algebra_Linear
-Algebra_Linear
-Algebra_Linear
+Algebra-Linear
+Algebra-Linear
+Algebra-Linear
 
 
 Livro mais emprestado: 
-Algebra_Linear com 5 empréstimos
+Algebra-Linear com 5 empréstimos
 
 Reservas em aberto: 
 Livro:  | Data reserva: 07-11-2024 | Leitor: Fernanda_Pacheco 

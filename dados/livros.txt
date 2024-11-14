@@ -1,6 +1,7 @@
-5
-1 Algebra_Linear 11940936 11940956 0
-2 Cálculo_1 11941008 11941028 0
-3 Sapiens 11941080 11941100 0
-4 Nação_Dopamina 11941152 11941172 1
-5 1984 11941224 11941244 0
+6
+1 Álgebra_Linear Alfredo_Steinbruch Acadêmico 0 5
+2 Cálculo_1 James_Stewart Acadêmico 0 8
+3 Sapiens Yuval_Harari Biografia 0 3
+4 Nação_Dopamina Anna_Lembke Autoajuda 1 1
+5 1984 George_Orwell Distopia 0 2
+6 ED1 Simone Dados 0 2

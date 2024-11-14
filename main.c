@@ -64,7 +64,7 @@ int main() {
     SetConsoleOutputCP(CP_UTF8);
     #endif
     FILE *livros, *leitores, *funcionarios, *emprestimos, *reservas; //criação dos ponteiros que irão ler os arquivos
-    int num_linhasLivro = 0, num_linhasLeitor = 0, num_linhasFuncionario = 0, num_linhasEmprestimo = 0, num_linhasReserva = 0, cod = 1, retornocod, opadm, sair_menu_principal = 0, opcadastro, opconfig, cod_livro = 0, opmudar; //contador i pro for e num_linhas pra quantidade de linhas de cada arquivo
+    int num_linhasLivro = 0, num_linhasLeitor = 0, num_linhasFuncionario = 0, num_linhasEmprestimo = 0, num_linhasReserva = 0, cod = 1, retornocod, opadm, sair_menu_principal = 0, opcadastro, opconfig, cod_livro = 0, opmudar, cod_fun, cargo; //contador i pro for e num_linhas pra quantidade de linhas de cada arquivo
     Tlivro *plivros = NULL;
     Tleitor *pleitor = NULL;
     Tfuncionario *pfuncionario = NULL;
@@ -139,8 +139,8 @@ int main() {
                     printf("1 - LIVROS\n2 - FUNCIONÁRIO\nDigite o cadastro que deseja fazer: ");
                     scanf("%d", &opcadastro);
                     if (opcadastro == 1)
-                        printf("Função cadastro livros aqui");
-                    else if (opcadastro == 1)
+                        cadastro_livro(&plivros, &num_linhasLivro);
+                    else if (opcadastro == 2)
                         cadastro_funcionario(&pfuncionario, &num_linhasFuncionario);
                 break;
             case 2:
@@ -207,10 +207,16 @@ int main() {
                     }
                 break;
             case 4:
-                printf("LISTA CARGOS:\n| 1 - OPERADOR\n| 2 - AUXILIAR\n| 3 - ADMINISTRADOR\n\n");
+                printf("\nLISTA CARGOS:\n| 1 - OPERADOR\n| 2 - AUXILIAR\n| 3 - ADMINISTRADOR\n\n");
                 for (int i = 0; i < num_linhasFuncionario; i++) {
-                    printf("Nome: %s | Cargo: %d\n", pfuncionario[i].nome, pfuncionario[i].cargo);
+                    printf("Código: %d | Nome: %s | Cargo: %d\n", pfuncionario[i].codigo, pfuncionario[i].nome, pfuncionario[i].cargo);
                 }
+                printf("\nDigite o código do funcionário: ");
+                scanf("%d", &cod_fun);
+                printf("%s - Cargo: %d\nPara qual cargo deseja alterar? ", pfuncionario[cod_fun - 1].nome, pfuncionario[cod_fun - 1].cargo);
+                scanf("%d", &cargo);
+                pfuncionario[cod_fun - 1].cargo = cargo;
+                reescreverFuncionario(&pfuncionario, &num_linhasFuncionario);
                 break;
             case 5:
                 goto sair_administracao;
@@ -1012,7 +1018,7 @@ FILE *reescrita;
 
     for (i = 0; i < *numlinhasLivro; i++) {
         // Escreve os dados de cada leitor no arquivo
-        fprintf(reescrita, "%d %s %d %d %d\n",
+        fprintf(reescrita, "%d %s %s %s %d %d\n",
                 (*plivros)[i].codigo, 
                 (*plivros)[i].titulo, 
                 (*plivros)[i].autor, 
@@ -1021,4 +1027,46 @@ FILE *reescrita;
     }
     fclose(reescrita);  // Fecha o arquivo
     printf("Arquivo reescrito com sucesso!\n");
+}
+
+void cadastro_livro(Tlivro **plivro, int *numlinhasLivro) {
+    Tlivro *temp = realloc(*plivro, (*numlinhasLivro + 1) * sizeof(Tlivro));
+    if (temp == NULL) {
+        printf("Erro ao alocar memória.\n");
+        getchar();
+        exit(1);
+    
+    }
+    // Atualiza o ponteiro de livro
+    *plivro = temp;
+
+    // Adição de 1 livro a quantidade
+   
+    printf("\nDigite o título do livro: ");
+    scanf("%s", (*plivro)[*numlinhasLivro].titulo);
+    getchar(); // Limpa o buffer
+
+    printf("\nDigite o autor: ");
+    scanf("%s", &(*plivro)[*numlinhasLivro].autor);
+    getchar(); // Limpa o buffer
+
+    printf("\nDigite o gênero: ");
+    scanf("%s", &(*plivro)[*numlinhasLivro].genero);
+    getchar(); // Limpa o buffer
+
+
+    // Gerar código para o livro
+   
+    (*plivro)[*numlinhasLivro].codigo = *numlinhasLivro + 1;  // Código sequencial
+
+    (*plivro)[*numlinhasLivro].status = 1;
+    (*plivro)[*numlinhasLivro].num_reservas = 0;
+
+    printf("\nDigite a quantidade: ");
+    scanf("%d", &(*plivro)[*numlinhasLivro].qnt_total);
+    getchar(); // Limpa o buffer
+
+    (*numlinhasLivro)++;
+    reescreverLivro(&*plivro, &*numlinhasLivro);
+    printf("\nLivro cadastrado\n");
 }
