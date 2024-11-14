@@ -1,26 +1,27 @@
 Livros disponíveis: 
+Álgebra_Linear - Alfredo_Steinbruch
+Cálculo_1 - James_Stewart
 Sapiens - Yuval_Harari
-Nação_Dopamina - Anna_Lembke
+1984 - George_Orwell
+ED1 - Simone
 
 Livros emprestados: 
-Cálculo_1
 Sapiens
 ED1
-t
+��
 
 Livro mais emprestado: 
-Álgebra_Linear com 2 empréstimos
+Álgebra_Linear com 3 empréstimos
 
 Reservas em aberto: 
 Livro: Álgebra_Linear | Data reserva: 14-11-2024 | Leitor: Fernanda_Pacheco 
 Livro: 1984 | Data reserva: 14-11-2024 | Leitor: Andre_Martins 
 
 Funcionário com maior número de movimentações:
-Funcionário: Mariana_Ferreira | Total de movimentações: 52
-Total empréstimos: 34 | Total devoluções: 18
+Funcionário: João_Nunes | Total de movimentações: 49
+Total empréstimos: 35 | Total devoluções: 14
 
 Leitores com empréstimos ativos: 
-Leitor: Fernanda_Pacheco
 Leitor: Maria_Antonieta
 Leitor: Andre_Martins
 Leitor: Andre_Martins

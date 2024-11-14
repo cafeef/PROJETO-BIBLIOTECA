@@ -96,7 +96,7 @@ int main() {
 
    int sl = 0;
    while(sair_menu_principal == 0) {
-    //limpar();
+    limpar();
     printf("\n| BIBLIOTECA VIRTUAL\n\n1 | Login\n2 | Consulta de acervo\n3 | Sair\n");
     printf("\n\nDigite o código da ação: ");
     scanf("%d", &sl);
@@ -168,7 +168,7 @@ int main() {
                     printf("\nDigite o código do livro: ");
                     scanf("%d", &cod_livro);
                     printf("\nCódigo: %d\nLivro: %s\nAutor: %s\nGênero: %s\n", plivros[cod_livro - 1].codigo, plivros[cod_livro - 1].titulo, plivros[cod_livro - 1].autor, plivros[cod_livro - 1].genero);
-                    printf("\n1 - Mudar título\n2 - Mudar autor\n3 - Mudar gênero\nDigite o que deseja mudar: ");
+                    printf("\n1 - Mudar título\n2 - Mudar autor\n3 - Mudar gênero\nDigite o que deseja fazer: ");
                     
                     scanf("%d", &opmudar);
                     switch (opmudar) {
@@ -250,7 +250,7 @@ int main() {
         exit(1);
     case 4:
         busca_multa(&pemprestimos, &num_linhasEmprestimo, &pleitor, &num_linhasLeitor);
-        //Sleep(5000);
+        sleep(5);
         getchar();
         break;
     default:
@@ -482,30 +482,30 @@ void reescreverLeitor(Tleitor **leitores, int *quantidade){
 void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos, int *quantidadeem, Tlivro **livros, int *quantidadeli, Tfuncionario **pfuncionario, int cod_funcionario, int *quantidadefun, Treserva **reservas, int *quantidaderes) {
     limpar();
     getchar(); // Limpa o buffer
-    int op;
+    int op, cod;
     printf("| NOVO ACESSO\n\n1 | Usuário existente\n2 | Adicionar usuário\n\nDigite a operação: ");
     scanf("%d", &op);
     getchar(); // Limpa o buffer
    
     if (op == 1) {
         limpar();
-        printf("| NOVO ACESSO\n\nDigite o código do usuário:");
+        printf("| NOVO ACESSO\n\nDigite o código do usuário: ");
         op = 0;
         scanf("%d", &op);
         getchar(); // Limpa o buffer
 
-        printf("| LEITOR\nCódigo:%d\nNome: %s\nE-mail: %s\n",   
+        printf("| LEITOR\nCódigo: %d\nNome: %s\nE-mail: %s\n",   
         (*leitores)[op-1].codigo,  
         (*leitores)[op-1].nome,
         (*leitores)[op-1].email);
-        int cod = op-1;
+        cod = op-1;
 
-        printf("\n\n1 | Empréstimo\n2 | Renovar/Devolver livro");
+        printf("\n\n1 | Empréstimo\n2 | Renovar/Devolver livro ");
         op = 0;
         scanf("%d", &op);
         getchar(); // Limpa o buffer
          printf("%d", op);
-        if(op==1){
+        if(op==1) {
             int i, total;
             total =0;
             limpar();
@@ -522,38 +522,40 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
                 printf("\n\nPressione qualquer tecla para voltar ao menu...");
                     getchar();
             }
-            else{
+            else {
                 int cod2;
-                
-                 printf("%s, o usuário possui %d/4 livro(s) locados.",  (*leitores)[cod].nome, total);
-                 printf("\nDigite o código do livro que deseja locar: ");
+                 printf("O usuário %s possui %d/4 livro(s) locados.",  (*leitores)[cod].nome, total);
+                 printf("\nLivros disponíveis:\n");
+                for (int i = 0; i < *quantidadeli; i++) {
+                    if ((*livros)[i].status == 1) {
+                        printf("%d: %s - %s\n", (*livros)[i].codigo, (*livros)[i].titulo, (*livros)[i].autor);
+                    }
+                }
+                printf("\nDigite o código do livro que deseja locar: ");
                 
                 scanf("%d", &cod2);
                 getchar(); // Limpa o buffer
                 
-                
-
                 int disp = (*livros)[cod2-1].status;
                 if(disp == 1){
-                    printf("Confirmar locação de '%s', para %s?", (*livros)[cod2-1].titulo, (*leitores)[cod].nome);
+                    printf("Confirmar locação de '%s', para %s? ", (*livros)[cod2-1].titulo, (*leitores)[cod].nome);
                     getchar();
                     cadastrar_emprestimo(&*emprestimos, &*quantidadeem, cod2, (*leitores)[cod].codigo);
-                    printf("%s, %d",(*livros)[cod2-1].titulo,(*livros)[cod2-1].status);
                     (*livros)[cod2-1].status = 3;
                     (*livros)[cod2-1].num_reservas = (*livros)[cod2-1].num_reservas + 1;
-                    (*pfuncionario)[cod_funcionario].total_emprestimos += 1;
+                    (*pfuncionario)[cod_funcionario - 1].total_emprestimos += 1;
                     reescreverLivro(&*livros, &*quantidadeli);
                     reescreverFuncionario(&*pfuncionario, &*quantidadefun);
                     printf("Livro locado com sucesso! \n\nPressione qualquer tecla para voltar ao menu...");
                     getchar();
                 }
     
-                if(disp==3){
+                if(disp==3) {
                     printf("O Livro está indisponível no momento, deseja entrar na fila de espera? (Digite 1)");
                     int fl;
                     scanf("%d", &fl);
                     getchar();
-                    if(fl == 1){
+                    if(fl == 1) {
                         int total = 1;
                         for(int h = 0; h < *quantidaderes; h++){
                              if((*reservas)[h].codigo_livro == (*livros)[cod2-1].codigo){
@@ -575,17 +577,18 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
                         getchar();
                     }    
                 }
-            }
+                }
         }
-        
-        if(op==2){
+        }
+
+        if(op==2) {
             int i;
+            cod = op - 2;
             limpar();
             printf("Livros locados - %s",  (*leitores)[cod].nome);
             printf("\n");
             int total = 0;
-            for(i=0;i<*quantidadeem; i++) {
-                
+            for(i = 0; i < *quantidadeem; i++) {
                 if(((*emprestimos)[i].cod_leitor == (*leitores)[cod].codigo) && ((*emprestimos)[i].status == 0)) {
                     total++;
                    
@@ -601,22 +604,21 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
                 }
             }
             if(total!=0) {
-                int lop;
-            printf("\nDigite o código do livro para operação: ");
-             op = 0;
+            int lop;
+            printf("\nDigite o código do empréstimo para operação: ");
+            op = 0;
             scanf("%d", &lop);
             getchar(); // Limpa o buffer
 
             printf("\n\n1 | Renovar empréstimo\n2 | Devolver livro ");
-             op = 0;
+            op = 0;
             scanf("%d", &op);
             getchar(); // Limpa o buffer
-            if(op == 1){
+            if(op == 1) {
                 char novadata[20]; 
                 int dif = comparar((*emprestimos)[lop-1].data_devp);
                
-                if(dif == 0){
-                
+                if(dif == 0) {
                     adicionarDias((*emprestimos)[lop-1].data_devp, 7, novadata);
                     strcpy((*emprestimos)[lop-1].data_devp, novadata);
                     printf("%s",(*emprestimos)[lop-1].data_devp);
@@ -624,7 +626,7 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
                     printf("Livro renovado! A nova data de devolução é: %s\n\nPressione qualquer tecla para voltar ao menu...",novadata);
                     getchar();
                 }
-                else{
+                else {
                     limpar();
                     int dias = diferenca((*emprestimos)[lop-1].data_devp);
                     int multa = dias*2;
@@ -634,18 +636,18 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
                     (*emprestimos)[lop-1].status = 1;
                     reescreverEmprestimo(&*emprestimos, &*quantidadeem);
                     printf("Livro devolvido! Obrigado.");
-                     op = 0;
+                    reescreverFuncionario(&*pfuncionario, &*quantidadefun);
+                    (*pfuncionario)[cod_funcionario - 1].total_devolucoes += 1;
+                    op = 0;
                 }
             }
-            else{
+            else {
                 
                 char* novadata[20]; 
                 int dif = comparar((*emprestimos)[lop-1].data_devp);
                
-                if(dif == 0){
+                if(dif == 0) {
                     int codlivro;
-               
-                 
                       for(int g = 0; g < *quantidadeli; g++) {
                         if ((*livros)[g].codigo == (*emprestimos)[lop-1].codigo_livro) {
                         codlivro = (*emprestimos)[lop-1].codigo_livro;
@@ -654,16 +656,15 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
                          
                     (*emprestimos)[lop-1].status = 1;
                     (*livros)[codlivro-1].status = 1;
-                    (*pfuncionario)[cod_funcionario].total_devolucoes += 1;
-                    printf("LIVRO %s %d\n", (*livros)[codlivro-1].titulo, (*livros)[codlivro-1].status);
+                    (*pfuncionario)[cod_funcionario - 1].total_devolucoes += 1;
+                    reescreverFuncionario(&*pfuncionario, &*quantidadefun);
                     reescreverLivro(&*livros, &*quantidadeli);
                     reescreverEmprestimo(&*emprestimos, &*quantidadeem);
                     printf("Livro devolvido! Obrigado.");
-                    (*pfuncionario)[cod_funcionario].total_devolucoes += 1;
                     getchar();
                    
                 }
-                else{
+                else {
                     limpar();
                     int dias = diferenca((*emprestimos)[lop-1].data_devp);
                     int multa = dias*2;
@@ -673,29 +674,24 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
                     (*emprestimos)[lop-1].status = 1;
                     reescreverEmprestimo(&*emprestimos, &*quantidadeem);
                     printf("Livro devolvido! Obrigado.");
-                    (*pfuncionario)[cod_funcionario].total_devolucoes += 1;
+                    (*pfuncionario)[cod_funcionario - 1].total_devolucoes += 1;
+                    reescreverFuncionario(&*pfuncionario, &*quantidadefun);
                     op = 0;
                     
 
                 }
 
             }
-
         }
-        else{
+        else {
             printf("Usuário sem livros locados no momento.");
             printf("\nPressione qualquer tecla para voltar ao menu...");
             op = 0;
             getchar();  // Aguarda o usuário pressionar uma tecla antes de continuar
             limpar();
             return;
-        } }
-            
-
-   
-
-
-    } else if (op == 2) {
+        } 
+     } else if (op == 2) {
         limpar();
         printf("| NOVO ACESSO\n\n");
         // Chamando a função para adicionar o usuário
@@ -716,7 +712,6 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
         getchar();  // Aguarda o usuário pressionar uma tecla antes de continuar
     }
 }
-
 
  
 //Função de separação de datas
@@ -1037,14 +1032,14 @@ int diferenca(const char *data) {
 }
 
 
-void consulta_acervo(Tlivro **plivros, int *num_linhasLivro,Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo){
+void consulta_acervo(Tlivro **plivros, int *num_linhasLivro,Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo) {
     limpar();
     getchar(); // Limpa o buffer
     int op, tem_algo = 0;
     printf("| CONSULTAR ACERVO\n\n1 | Todos os livros\n2 | Livros disponíveis\n3 | Livros emprestados\n4 | Livros reservados\n5 | Cancelar consulta\n\nDigite a operação: ");
     scanf("%d", &op);
     getchar(); // Limpa o buffer
-    switch(op){
+    switch(op) {
     case 1:
         printf("\nTodos os Livros:\n");
         for (int i = 0; i < *num_linhasLivro; i++)
@@ -1053,7 +1048,6 @@ void consulta_acervo(Tlivro **plivros, int *num_linhasLivro,Treserva **preservas
     case 2:
         printf("\nLivros disponíveis:\n");
         for (int i = 0; i < *num_linhasLivro; i++) {
-            
             if ((*plivros)[i].status == 1){
                 tem_algo = 1;
                 printf("%s - %s\n", (*plivros)[i].titulo, (*plivros)[i].autor);
@@ -1066,7 +1060,7 @@ void consulta_acervo(Tlivro **plivros, int *num_linhasLivro,Treserva **preservas
         for (int i = 0; i < *numlinhasEmprestimo; i++) {
             if ((*pemprestimo)[i].status == 0){
                 tem_algo = 1;
-                printf("%s - %s\n", (*plivros)[((*pemprestimo)[i].codigo_livro)].titulo, (*plivros)[((*pemprestimo)[i].codigo_livro)].autor);
+                printf("%s - %s\n", (*plivros)[((*pemprestimo)[i].codigo_livro - 1)].titulo, (*plivros)[((*pemprestimo)[i].codigo_livro - 1)].autor);
             }
         } if (tem_algo == 0)
             printf("\nNenhum item para mostrar.\n");
@@ -1086,7 +1080,6 @@ void consulta_acervo(Tlivro **plivros, int *num_linhasLivro,Treserva **preservas
         printf("Opção inválida!\n");
         break;
     }
-    
 }
 
 void reescreverLivro(Tlivro **plivros, int *numlinhasLivro) {
