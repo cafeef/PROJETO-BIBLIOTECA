@@ -1018,11 +1018,11 @@ FILE *reescrita;
 
     for (i = 0; i < *numlinhasLivro; i++) {
         // Escreve os dados de cada leitor no arquivo
-        fprintf(reescrita, "%d %s %s %s %d %d\n",
+        fprintf(reescrita, "%d %s %s %s %d %d %d\n",
                 (*plivros)[i].codigo, 
                 (*plivros)[i].titulo, 
                 (*plivros)[i].autor, 
-                (*plivros)[i].genero, 
+                (*plivros)[i].genero, (*plivros)[i].status, 
                 (*plivros)[i].num_reservas, (*plivros)[i].qnt_total);
     }
     fclose(reescrita);  // Fecha o arquivo
