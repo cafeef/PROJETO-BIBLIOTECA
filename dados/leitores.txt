@@ -1,5 +1,5 @@
 12
-1 Fernanda_Pacheco fer@email.com 1 0
+1 Fernanda_Pacheco pa@email.com 1 0
 2 Andre_Martins andre@email.com 0 0
 3 Pedro_Carvalho pedro@email.com 0 0
 4 Lucas_Pereira lucas@email.com 1 0

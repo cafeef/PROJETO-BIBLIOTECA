@@ -44,7 +44,8 @@ Tfuncionario *inicializa_funcionarios(int *num_linhasFuncionario);
 Temprestimos *inicializa_emprestimos (int *num_linhasEmprestimos);
 Treserva *inicializa_reserva (int *num_linhasReserva);
 void adicionarUsuario(Tleitor **leitores, int *quantidade);
-void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos, int *quantidadeem, Tlivro **livros, int *quantidadeli);
+void reescreverLeitor(Tleitor **leitores, int *quantidade);
+void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos, int *quantidadeem, Tlivro **livros, int *quantidadeli, Tfuncionario **pfuncionario, int cod_funcionario);
 int comparar(const char *d1);
 int diasNoMes(int mes, int ano);
 void adicionarDias(char *data, int dias, char *novadata);
@@ -55,6 +56,7 @@ void reescreverFuncionario(Tfuncionario **funcionarios, int *quantidadefun);
 void cadastrar_emprestimo(Temprestimos **emprestimos, int *quantidade, int codl, int codleitor);
 int diferenca(const char *data);
 void consulta_acervo(Tlivro **plivros, int *num_linhasLivro,Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo);
+void reescreverLivro(Tlivro **plivros, int *numlinhasLivro);
 
 int main() {
     limpar();
@@ -62,7 +64,7 @@ int main() {
     SetConsoleOutputCP(CP_UTF8);
     #endif
     FILE *livros, *leitores, *funcionarios, *emprestimos, *reservas; //criação dos ponteiros que irão ler os arquivos
-    int num_linhasLivro = 0, num_linhasLeitor = 0, num_linhasFuncionario = 0, num_linhasEmprestimo = 0, num_linhasReserva = 0; //contador i pro for e num_linhas pra quantidade de linhas de cada arquivo
+    int num_linhasLivro = 0, num_linhasLeitor = 0, num_linhasFuncionario = 0, num_linhasEmprestimo = 0, num_linhasReserva = 0, cod = 1, retornocod, opadm, sair_menu_principal = 0, opcadastro, opconfig, cod_livro = 0, opmudar; //contador i pro for e num_linhas pra quantidade de linhas de cada arquivo
     Tlivro *plivros = NULL;
     Tleitor *pleitor = NULL;
     Tfuncionario *pfuncionario = NULL;
@@ -73,37 +75,159 @@ int main() {
     pfuncionario = inicializa_funcionarios(&num_linhasFuncionario);
     pemprestimos = inicializa_emprestimos(&num_linhasEmprestimo);
     preserva = inicializa_reserva(&num_linhasReserva);
-    if(!livros || !leitores || !funcionarios || !emprestimos || !reservas) { //verificação se o arquivo foi aberto
+    if(!plivros || !pleitor || !pfuncionario || !pemprestimos || !preserva) { //verificação se o arquivo foi aberto
         printf("Erro! Impossível de abrir um dos arquivos.\n");
         exit(1);
     }
-    else{
+    else {
          printf("Sucesso! Arquivos inicializados.\n"); 
     }
 
    int sl = 0;
-   while(sl != 5) {
+   while(sair_menu_principal == 0) {
     limpar();
-    printf("\n| BIBLIOTECA VIRTUAL\n\n1 | Novo acesso\n2 | Consulta de acervo\n3 | Relatórios\n4 | Administração \n5 | Sair");
+    printf("\n| BIBLIOTECA VIRTUAL\n\n1 | Login\n2 | Consulta de acervo\n3 | Sair\n");
     printf("\n\nDigite o código da ação: ");
     scanf("%d", &sl);
-    switch (sl)
-    {
+    switch (sl) {
     case 1:
-        novoacesso(&pleitor, &num_linhasLeitor, &pemprestimos, &num_linhasEmprestimo, &plivros, &num_linhasLivro);
+        /*OPERADOR: emprestimos, devoluções e reservas
+        ADMINISTRADOR: cadastros, relatórios, configurações e permissões de usuários*/
+        while (cod != 0) {
+            printf("Digite seu código: \n");
+            scanf("%d", &cod);
+            for (int i = 0; i < num_linhasFuncionario; i++) {
+                if (pfuncionario[i].codigo == cod) {
+                    retornocod = 1;
+                    break;
+                }
+                else {
+                    retornocod = 0;
+                }
+            }
+            if (retornocod) {
+                printf("Bem vindo(a), %s!\n", pfuncionario[cod-1].nome);
+                Sleep(2000);
+                break;
+            }
+            else
+                printf("Usuário não encontrado, verifique o código digitado.\n");
+        }
+
+        while (1) {
+            limpar();
+            if (pfuncionario[cod-1].cargo == 1) {
+            printf("| MENU OPERADOR\n1 - EMPRÉSTIMOS/DEVOLUÇÕES/RESERVAS\n2 - VOLTAR AO MENU PRINCIPAL\nDigite a opção que deseja: ");
+            scanf("%d", &opadm);
+            switch (opadm) {
+            case 1:
+            novoacesso(&pleitor, &num_linhasLeitor, &pemprestimos, &num_linhasEmprestimo, &plivros, &num_linhasLivro, &pfuncionario, cod);
+                break;
+            case 2:
+                goto sair_administracao;
+                break;
+            default:
+                printf("Opção inválida");
+                break;
+            }
+        }
+        if (pfuncionario[cod-1].cargo == 3) {
+            printf("| MENU ADMINISTRADOR\n1 - CADASTROS\n2 - RELATÓRIOS\n3 - CONFIGURAÇÕES\n4 - PERMISSÕES USUÁRIOS\n5 - VOLTAR AO MENU PRINCIPAL\nDigite a opção que deseja: ");
+            scanf("%d", &opadm);
+            switch (opadm) {
+                case 1:
+                    printf("1 - LIVROS\n2 - FUNCIONÁRIO\nDigite o cadastro que deseja fazer: ");
+                    scanf("%d", &opcadastro);
+                    if (opcadastro == 1)
+                        printf("Função cadastro livros aqui");
+                    else if (opcadastro == 1)
+                        cadastro_funcionario(&pfuncionario, &num_linhasFuncionario);
+                break;
+            case 2:
+                relatorio();
+                Sleep(10000);
+                break;
+            case 3:
+                printf("| CONFIGURAÇÃO\n1 - LIVROS\n2 - LEITOR\nDigite a configuração que deseja: ");
+                scanf("%d", &opconfig);
+                if (opconfig == 1) {
+                    for (int i = 0; i < num_linhasLivro; i++) {
+                        printf("\nCódigo: %d\nLivro: %s\n", plivros[i].codigo, plivros[i].titulo);
+                    }
+                    printf("\nDigite o código do livro: ");
+                    scanf("%d", &cod_livro);
+                    printf("\nCódigo: %d\nLivro: %s\nAutor: %s\nGênero: %s\n", plivros[cod_livro - 1].codigo, plivros[cod_livro - 1].titulo, plivros[cod_livro - 1].autor, plivros[cod_livro - 1].genero);
+                    printf("\n1 - Mudar título\n2 - Mudar autor\n3 - Mudar gênero\nDigite o que deseja mudar: ");
+                    scanf("%d", &opmudar);
+                    switch (opmudar) {
+                    case 1:
+                        printf("\nAVISO! O título deve ser escrito sem espaço em branco, use _ ou - para separar as palavras.\nDigite o novo nome: ");
+                        getchar();
+                        scanf("%s", &plivros[cod_livro - 1].titulo);
+                        break;
+                    case 2:
+                        printf("\nAVISO! O autor deve ser escrito sem espaço em branco, use _ ou - para separar as palavras.\nDigite o novo nome: ");
+                        getchar();
+                        scanf("%s", &plivros[cod_livro - 1].autor);
+                        break;
+                    case 3:
+                        printf("\nAVISO! O gênero deve ser escrito sem espaço em branco, use _ ou - para separar as palavras.\nDigite o novo nome: ");
+                        getchar();
+                        scanf("%s", &plivros[cod_livro - 1].genero);
+                        break;
+                    default:
+                        break;
+                    }
+                    reescreverLivro(&plivros, &num_linhasLivro);
+                    }
+                    if (opconfig == 2) {
+                        for (int i = 0; i < num_linhasLeitor; i++) {
+                        printf("\nCódigo: %d\nLeitor: %s\n", pleitor[i].codigo, pleitor[i].nome);
+                    }
+                    printf("\nDigite o código do leitor: ");
+                    scanf("%d", &cod_livro);
+                    printf("\nCódigo: %d\nLeitor: %s\nE-mail: %s\n", pleitor[cod_livro - 1].codigo, pleitor[cod_livro - 1].nome, pleitor[cod_livro - 1].email);
+                    printf("\n1 - Mudar nome\n2 - Mudar e-mail\nDigite o que deseja mudar: ");
+                    scanf("%d", &opmudar);
+                    switch (opmudar) {
+                    case 1:
+                        printf("\nAVISO! O nome deve ser escrito sem espaço em branco, use _ ou - para separar as palavras.\nDigite o novo nome: ");
+                        getchar();
+                        scanf("%s", &pleitor[cod_livro - 1].nome);
+                        break;
+                    case 2:
+                        printf("\nAVISO! O e-mail deve ser escrito sem espaço em branco, use _ ou - para separar as palavras.\nDigite o novo nome: ");
+                        getchar();
+                        scanf("%s", &pleitor[cod_livro - 1].email);
+                        break;
+                    default:
+                        break;
+                    }
+                    reescreverLeitor(&pleitor, &num_linhasLeitor);
+                    }
+                break;
+            case 4:
+                printf("LISTA CARGOS:\n| 1 - OPERADOR\n| 2 - AUXILIAR\n| 3 - ADMINISTRADOR\n\n");
+                for (int i = 0; i < num_linhasFuncionario; i++) {
+                    printf("Nome: %s | Cargo: %d\n", pfuncionario[i].nome, pfuncionario[i].cargo);
+                }
+                break;
+            case 5:
+                goto sair_administracao;
+            default:
+                printf("Opção inválida");
+                break;
+            }
+        }
+        }
+        sair_administracao:
         break;
     case 2:
         consulta_acervo(&plivros, &num_linhasLivro, &preserva, &num_linhasReserva, &pemprestimos, &num_linhasEmprestimo);
         Sleep(5000);
         break;
-    case 3:
-        relatorio();
-        Sleep(10000);
-        break;
-    case 4:
-        cadastro_funcionario(&pfuncionario, &num_linhasFuncionario);
-        break;
-    case 5: 
+    
+    case 3: 
         escrever_relatorio(&plivros, &num_linhasLivro, &preserva, &num_linhasReserva, &pemprestimos, &num_linhasEmprestimo, &pleitor, &num_linhasLeitor, &pfuncionario, &num_linhasFuncionario);
         printf("\nAté a próxima!\n");
         exit(1);
@@ -301,7 +425,7 @@ void reescreverLeitor(Tleitor **leitores, int *quantidade){
     printf("Arquivo reescrito com sucesso!\n");
 }
 
-void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos, int *quantidadeem, Tlivro **livros, int *quantidadeli) {
+void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos, int *quantidadeem, Tlivro **livros, int *quantidadeli, Tfuncionario **pfuncionario, int cod_funcionario) {
     limpar();
     getchar(); // Limpa o buffer
     int op;
@@ -359,6 +483,7 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
                      getchar();
                      cadastrar_emprestimo(&*emprestimos, &*quantidadeem, cod2-1, (*leitores)[cod].codigo);
                      (*livros)[cod2-1].codigo = 3;
+                     (*pfuncionario)[cod_funcionario].total_emprestimos += 1;
                      
                 }
                 if(disp ==3){
@@ -442,6 +567,7 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
                     (*emprestimos)[lop-1].status = 1;
                     reescreverEmprestimo(&*emprestimos, &*quantidadeem);
                     printf("Livro devolvido! Obrigado.");
+                    (*pfuncionario)[cod_funcionario].total_devolucoes += 1;
                    
                 }
                 else{
@@ -454,7 +580,8 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
                     (*emprestimos)[lop-1].status = 1;
                     reescreverEmprestimo(&*emprestimos, &*quantidadeem);
                     printf("Livro devolvido! Obrigado.");
-                     op = 0;
+                    (*pfuncionario)[cod_funcionario].total_devolucoes += 1;
+                    op = 0;
                     
 
                 }
@@ -863,4 +990,35 @@ void consulta_acervo(Tlivro **plivros, int *num_linhasLivro,Treserva **preservas
         break;
     }
     return 0;
+}
+
+void reescreverLivro(Tlivro **plivros, int *numlinhasLivro) {
+FILE *reescrita;
+    int i;
+
+    #ifdef _WIN32
+        reescrita = fopen("C:.\\dados\\livros.txt", "w");
+    #else
+        reescrita = fopen("./dados/livros.txt", "w");
+    #endif
+
+    if (reescrita == NULL) {
+        printf("Erro ao abrir o arquivo em modo de edição!\n");
+        return;  // Retorna sem fazer nada se o arquivo não for aberto
+    }
+
+    // Escreve a quantidade de leitores no arquivo
+    fprintf(reescrita, "%d\n", *numlinhasLivro);  // Escreve o número de leitores no começo do arquivo
+
+    for (i = 0; i < *numlinhasLivro; i++) {
+        // Escreve os dados de cada leitor no arquivo
+        fprintf(reescrita, "%d %s %d %d %d\n",
+                (*plivros)[i].codigo, 
+                (*plivros)[i].titulo, 
+                (*plivros)[i].autor, 
+                (*plivros)[i].genero, 
+                (*plivros)[i].num_reservas, (*plivros)[i].qnt_total);
+    }
+    fclose(reescrita);  // Fecha o arquivo
+    printf("Arquivo reescrito com sucesso!\n");
 }
