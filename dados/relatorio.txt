@@ -1,41 +1,30 @@
 Livros disponíveis: 
-1984 - George_Orwell
-ED1 - Simone
+Sapiens - Yuval_Harari
+Nação_Dopamina - Anna_Lembke
 
 Livros emprestados: 
-Álgebra_Linear
 Cálculo_1
 Sapiens
-Sapiens
-Álgebra_Linear
+ED1
+t
 
 Livro mais emprestado: 
-1984 com 5 empréstimos
+Álgebra_Linear com 2 empréstimos
 
 Reservas em aberto: 
-Livro: Nação_Dopamina | Data reserva: 07-11-2024 | Leitor: Fernanda_Pacheco 
 Livro: Álgebra_Linear | Data reserva: 14-11-2024 | Leitor: Fernanda_Pacheco 
-Livro: Álgebra_Linear | Data reserva: 14-11-2024 | Leitor: Fernanda_Pacheco 
-Livro: Álgebra_Linear | Data reserva: 14-11-2024 | Leitor: Fernanda_Pacheco 
-Livro: Álgebra_Linear | Data reserva: 14-11-2024 | Leitor: Fernanda_Pacheco 
-Livro: Álgebra_Linear | Data reserva: 14-11-2024 | Leitor: Fernanda_Pacheco 
-Livro: Álgebra_Linear | Data reserva: 14-11-2024 | Leitor: Fernanda_Pacheco 
-Livro: Álgebra_Linear | Data reserva: 14-11-2024 | Leitor: Fernanda_Pacheco 
-Livro: Álgebra_Linear | Data reserva: 14-11-2024 | Leitor: Fernanda_Pacheco 
+Livro: 1984 | Data reserva: 14-11-2024 | Leitor: Andre_Martins 
 
 Funcionário com maior número de movimentações:
-Funcionário: Mariana_Ferreira | Total de movimentações: 37
-Total empréstimos: 25 | Total devoluções: 12
+Funcionário: Mariana_Ferreira | Total de movimentações: 52
+Total empréstimos: 34 | Total devoluções: 18
 
 Leitores com empréstimos ativos: 
 Leitor: Fernanda_Pacheco
-Leitor: Pedro_Carvalho
-Leitor: Lucas_Pereira
-Leitor: Lucas_Pereira
-Leitor: Fernanda_Pacheco
+Leitor: Maria_Antonieta
+Leitor: Andre_Martins
+Leitor: Andre_Martins
 
 Histórico de multas: 
 
 Multas (R$2/dia):
-Multa de R$8.00 para Lucas_Pereira - Venceu no dia: 10-11-2024
-Multa de R$26.00 para Pedro_Giordano - Venceu no dia: 01-11-2024
