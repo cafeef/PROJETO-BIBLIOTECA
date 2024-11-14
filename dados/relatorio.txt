@@ -6,14 +6,10 @@ Sapiens - Yuval_Harari
 ED1 - Simone
 
 Livros emprestados: 
-Nação_Dopamina
 Álgebra_Linear
-Álgebra_Linear
-Álgebra_Linear
-
 
 Livro mais emprestado: 
-Álgebra_Linear com 5 empréstimos
+Cálculo_1 com 1 empréstimos
 
 Reservas em aberto: 
 Livro: Nação_Dopamina | Data reserva: 07-11-2024 | Leitor: Fernanda_Pacheco 
@@ -23,10 +19,6 @@ Funcionário: João_Nunes | Total de movimentações: 25
 Total empréstimos: 10 | Total devoluções: 15
 
 Leitores com empréstimos ativos: 
-Leitor: Lucas_Pereira
 Leitor: Fernanda_Pacheco
-Leitor: Fernanda_Pacheco
-Leitor: Fernanda_Pacheco
-Leitor: Andre_Martins
 
 Histórico de multas: 

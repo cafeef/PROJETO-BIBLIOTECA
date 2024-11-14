@@ -45,7 +45,7 @@ Temprestimos *inicializa_emprestimos (int *num_linhasEmprestimos);
 Treserva *inicializa_reserva (int *num_linhasReserva);
 void adicionarUsuario(Tleitor **leitores, int *quantidade);
 void reescreverLeitor(Tleitor **leitores, int *quantidade);
-void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos, int *quantidadeem, Tlivro **livros, int *quantidadeli, Tfuncionario **pfuncionario, int cod_funcionario);
+void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos, int *quantidadeem, Tlivro **livros, int *quantidadeli, Tfuncionario **pfuncionario, int cod_funcionario, int *quantidadefun, Treserva **reservas, int *quantidaderes);
 int comparar(const char *d1);
 int diasNoMes(int mes, int ano);
 void adicionarDias(char *data, int dias, char *novadata);
@@ -57,6 +57,10 @@ void cadastrar_emprestimo(Temprestimos **emprestimos, int *quantidade, int codl,
 int diferenca(const char *data);
 void consulta_acervo(Tlivro **plivros, int *num_linhasLivro,Treserva **preservas, int *numlinhasReserva, Temprestimos **pemprestimo, int *numlinhasEmprestimo);
 void reescreverLivro(Tlivro **plivros, int *numlinhasLivro);
+void busca_multa(Temprestimos **pemprestimo, int *numlinhasEmprestimo, Tleitor **pleitor, int *numlinhasLeitor);
+void busca_multa_relatorio(FILE **relatorio, Temprestimos  **pemprestimo, int *numlinhasEmprestimo, Tleitor **pleitor, int *numlinhasLeitor);
+void adicionarReserva(Treserva **reservas, int *quantidade, int codl, int codlei, char data[20]);
+void reescreverReserva(Treserva **reservas, int *quantidade);
 
 int main() {
     limpar();
@@ -121,7 +125,8 @@ int main() {
             scanf("%d", &opadm);
             switch (opadm) {
             case 1:
-            novoacesso(&pleitor, &num_linhasLeitor, &pemprestimos, &num_linhasEmprestimo, &plivros, &num_linhasLivro, &pfuncionario, cod);
+        
+            novoacesso(&pleitor, &num_linhasLeitor, &pemprestimos, &num_linhasEmprestimo, &plivros, &num_linhasLivro, &pfuncionario, cod, &num_linhasFuncionario, &preserva, &num_linhasReserva);
                 break;
             case 2:
                 goto sair_administracao;
@@ -158,6 +163,7 @@ int main() {
                     scanf("%d", &cod_livro);
                     printf("\nCódigo: %d\nLivro: %s\nAutor: %s\nGênero: %s\n", plivros[cod_livro - 1].codigo, plivros[cod_livro - 1].titulo, plivros[cod_livro - 1].autor, plivros[cod_livro - 1].genero);
                     printf("\n1 - Mudar título\n2 - Mudar autor\n3 - Mudar gênero\nDigite o que deseja mudar: ");
+                    
                     scanf("%d", &opmudar);
                     switch (opmudar) {
                     case 1:
@@ -232,11 +238,14 @@ int main() {
         consulta_acervo(&plivros, &num_linhasLivro, &preserva, &num_linhasReserva, &pemprestimos, &num_linhasEmprestimo);
         Sleep(5000);
         break;
-    
     case 3: 
         escrever_relatorio(&plivros, &num_linhasLivro, &preserva, &num_linhasReserva, &pemprestimos, &num_linhasEmprestimo, &pleitor, &num_linhasLeitor, &pfuncionario, &num_linhasFuncionario);
         printf("\nAté a próxima!\n");
         exit(1);
+    case 4:
+        busca_multa(&pemprestimos, &num_linhasEmprestimo, &pleitor, &num_linhasLeitor);
+        Sleep(5000);
+        break;
     default:
         printf("Opção inválida!\n");
         break;
@@ -352,9 +361,9 @@ Treserva *inicializa_reserva (int *num_linhasReserva) {
     FILE *reservas;
     Treserva *preserva; //criação do ponteiro que vai mexer com a struct
     #ifdef _WIN32
-    reservas = fopen("C:.\\dados\\reservas.txt", "r"); // Caminho para Windows
+    reservas = fopen("C:.\\dados\\reserva.txt", "r"); // Caminho para Windows
     #else
-        reservas = fopen("./dados/reservas.txt", "r"); // Caminho para Linux/macOS
+        reservas = fopen("./dados/reserva.txt", "r"); // Caminho para Linux/macOS
     #endif
     fscanf(reservas, "%d", num_linhasReserva);//recebe a quantidade de linhas
     preserva = (Treserva *)malloc(sizeof(Treserva) * *num_linhasReserva);
@@ -362,6 +371,7 @@ Treserva *inicializa_reserva (int *num_linhasReserva) {
     for (int i = 0; i < *num_linhasReserva; i++) { //leitura dos dados e armazenamento nas structs
         fscanf(reservas, "%d %d %d %s", &(preserva + i)->codigo, &(preserva + i)->codigo_livro, &(preserva + i)->cod_leitor, &(preserva + i)->data_reserva);
     }
+
     return preserva;
 }
 
@@ -399,6 +409,61 @@ void adicionarUsuario(Tleitor **leitores, int *quantidade) {
      (*quantidade)++;
 }
 
+void adicionarReserva(Treserva **reservas, int *quantidade, int codl, int codlei, char data[20]) {
+    // Realoca memória -  adiciona um item a Tleitor
+    
+    Treserva *temp = realloc(*reservas, (*quantidade + 1) * sizeof(Treserva));
+    if (temp == NULL) {
+        printf("Erro ao alocar memória.\n");
+        exit(1);
+    }
+
+    // Atualiza o ponteiro de leitores
+    *reservas = temp;
+
+    // Gerar código para o usuário
+   
+    (*reservas)[*quantidade].codigo = *quantidade+1;  // Código sequencial
+
+    // Inicializa os outros campos como 0
+    (*reservas)[*quantidade].codigo_livro = codl;
+    (*reservas)[*quantidade].cod_leitor = codlei;
+    strcpy((*reservas)[*quantidade].data_reserva, data);
+     (*quantidade)++;
+     
+}
+
+void reescreverReserva(Treserva **reservas, int *quantidade){
+    FILE *reescrita;
+    int i;
+
+    #ifdef _WIN32
+        reescrita = fopen("C:.\\dados\\reserva.txt", "w");
+    #else
+        reescrita = fopen("./dados/reserva.txt", "w");
+    #endif
+
+    if (reescrita == NULL) {
+        printf("Erro ao abrir o arquivo em modo de edição!\n");
+        return;  // Retorna sem fazer nada se o arquivo não for aberto
+    }
+
+    // Escreve a quantidade de reservas no arquivo
+    fprintf(reescrita, "%d\n", *quantidade);  // Escreve o número de reservas no começo do arquivo
+
+    for (i = 0; i < *quantidade; i++) {
+        // Escreve os dados de cada leitor no arquivo
+        fprintf(reescrita, "%d %d %d %s\n",
+                (*reservas)[i].codigo, (*reservas)[i].codigo_livro, 
+                (*reservas)[i].cod_leitor, (*reservas)[i].data_reserva);
+    }
+    
+    fclose(reescrita);  // Fecha o arquivo
+
+    printf("Arquivo reescrito com sucesso!\n");
+}
+
+
 void reescreverLeitor(Tleitor **leitores, int *quantidade){
 
    FILE *reescrita;
@@ -431,7 +496,7 @@ void reescreverLeitor(Tleitor **leitores, int *quantidade){
     printf("Arquivo reescrito com sucesso!\n");
 }
 
-void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos, int *quantidadeem, Tlivro **livros, int *quantidadeli, Tfuncionario **pfuncionario, int cod_funcionario) {
+void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos, int *quantidadeem, Tlivro **livros, int *quantidadeli, Tfuncionario **pfuncionario, int cod_funcionario, int *quantidadefun, Treserva **reservas, int *quantidaderes) {
     limpar();
     getchar(); // Limpa o buffer
     int op;
@@ -486,25 +551,44 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
                 int disp = (*livros)[cod2-1].status;
                 if(disp == 1){
                     printf("Confirmar locação de '%s', para %s?", (*livros)[cod2-1].titulo, (*leitores)[cod].nome);
-                     getchar();
-                     cadastrar_emprestimo(&*emprestimos, &*quantidadeem, cod2-1, (*leitores)[cod].codigo);
-                     (*livros)[cod2-1].codigo = 3;
-                     (*pfuncionario)[cod_funcionario].total_emprestimos += 1;
+                    getchar();
+                    cadastrar_emprestimo(&*emprestimos, &*quantidadeem, cod2-1, (*leitores)[cod].codigo);
+                    printf("%s, %d",(*livros)[cod2-1].titulo,(*livros)[cod2-1].status);
+                    (*livros)[cod2-1].status = 3;
+                    (*livros)[cod2-1].num_reservas = (*livros)[cod2-1].num_reservas + 1;
+                    (*pfuncionario)[cod_funcionario].total_emprestimos += 1;
+                    reescreverLivro(&*livros, &*quantidadeli);
+                    reescreverFuncionario(&*pfuncionario, &*quantidadefun);
                      
                 }
-                if(disp ==3){
-                    printf("O Livro está emprestado e já possui uma reserva pendente.");
-                     getchar();
+    
+                if(disp==3){
+                    printf("O Livro está indisponível no momento, deseja entrar na fila de espera? (Digite 1)");
+                    int fl;
+                    scanf("%d", &fl);
+                    getchar();
+                    if(fl == 1){
+                        int total = 0;
+                        for(int h = 0; h < *quantidaderes; h++){
+                             if((*reservas)[h].codigo_livro == (*livros)[cod2-1].codigo){
+                                total = total + 1;
+                             }
+                        
+                        }
+                        
+                        time_t t = time(NULL);
+                        struct tm tm = *localtime(&t);
+                        char data[20];
+                        // Formatar a data como DD-MM-YYYY
+                        sprintf(data, "%02d-%02d-%d", tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900);
+                        adicionarReserva(&*reservas, &*quantidaderes, (*livros)[cod2-1].codigo, (*leitores)[cod].codigo, data);
+                        printf("%d\n", *quantidaderes);
+                        reescreverReserva(&*reservas, &*quantidaderes);
+                        printf("Adicionado a lista de espera! Posição atual: %d, Livro: %s", total, (*livros)[cod2-1].titulo);
+                        getchar();
+                    }    
                 }
-                if(disp==2){
-                    printf("O Livro está indisponível no momento, porém pode ser reservado.");
-                     getchar();;
-                }
-                
-                
             }
-           
-
         }
         
         if(op==2){
@@ -597,7 +681,7 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
         }
         else{
             printf("Usuário sem livros locados no momento.");
-            printf("\nPressione qualquer tecla para voltar ao menu.");
+            printf("\nPressione qualquer tecla para voltar ao menu...");
             op = 0;
             getchar();  // Aguarda o usuário pressionar uma tecla antes de continuar
             limpar();
@@ -732,7 +816,7 @@ void escrever_relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preser
         fprintf(relatorio, "\nLivros emprestados: \n");
         for (int i = 0; i < *numlinhasEmprestimo; i++) {
             if ((*pemprestimo)[i].status == 0)
-                fprintf(relatorio, "%s\n", (*plivros)[((*pemprestimo)[i].codigo_livro - 1)].titulo);
+                fprintf(relatorio, "%s\n", (*plivros)[((*pemprestimo)[i].codigo_livro)].titulo);
         }
         int livro = 0;
         //livros mais emprestados e reservas em aberto
@@ -865,7 +949,7 @@ void cadastrar_emprestimo(Temprestimos **emprestimos, int *quantidade, int codl,
      (*quantidade)++;
    
     reescreverEmprestimo(&*emprestimos, &*quantidade);
-    getchar();
+    return;
 }
 
 void reescreverFuncionario(Tfuncionario **funcionarios, int *quantidadefun) {
@@ -975,7 +1059,7 @@ void consulta_acervo(Tlivro **plivros, int *num_linhasLivro,Treserva **preservas
         for (int i = 0; i < *numlinhasEmprestimo; i++) {
             if ((*pemprestimo)[i].status == 0){
                 tem_algo = 1;
-                printf("%s - %s\n", (*plivros)[((*pemprestimo)[i].codigo_livro - 1)].titulo, (*plivros)[((*pemprestimo)[i].codigo_livro - 1)].autor);
+                printf("%s - %s\n", (*plivros)[((*pemprestimo)[i].codigo_livro)].titulo, (*plivros)[((*pemprestimo)[i].codigo_livro)].autor);
             }
         } if (tem_algo == 0)
             printf("\nNenhum item para mostrar.\n");
@@ -1070,3 +1154,31 @@ void cadastro_livro(Tlivro **plivro, int *numlinhasLivro) {
     reescreverLivro(&*plivro, &*numlinhasLivro);
     printf("\nLivro cadastrado\n");
 }
+
+
+void busca_multa(Temprestimos **pemprestimo, int *numlinhasEmprestimo, Tleitor **pleitor, int *numlinhasLeitor){
+    for(int i = 0; i < *numlinhasEmprestimo; i++){
+        printf("\nMultas (R$2/dia): \n");
+        if((*pemprestimo)[i].status == 0){
+            if (comparar((*pemprestimo)[i].data_devp)){
+            int dias = diferenca((*pemprestimo)[i].data_devp);
+            printf("\nMulta de R$%.2f para %s - Venceu no dia: %s", (float )(dias*2), (*pleitor)[(*pemprestimo)[i].cod_leitor].nome, (*pemprestimo)[i].data_devp);        
+            }
+        }
+    }
+}
+
+void busca_multa_relatorio(FILE **relatorio, Temprestimos  **pemprestimo, int *numlinhasEmprestimo, Tleitor **pleitor, int *numlinhasLeitor){
+    for(int i = 0; i < *numlinhasEmprestimo; i++){
+        fprintf(*relatorio, "\nMultas (R$2/dia): \n");
+        if((*pemprestimo)[i].status == 0){
+            if (comparar((*pemprestimo)[i].data_devp)){
+            int dias = diferenca((*pemprestimo)[i].data_devp);
+            fprintf(*relatorio, "\nMulta de R$%.2f para %s - Venceu no dia: %s", (float)(dias*2), (*pleitor)[(*pemprestimo)[i].cod_leitor].nome, (*pemprestimo)[i].data_devp);        
+            }
+        }
+    }
+}
+
+
+
