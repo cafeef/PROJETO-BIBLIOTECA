@@ -248,19 +248,9 @@ int main() {
     case 3: 
         escrever_relatorio(&plivros, &num_linhasLivro, &preserva, &num_linhasReserva, &pemprestimos, &num_linhasEmprestimo, &pleitor, &num_linhasLeitor, &pfuncionario, &num_linhasFuncionario);
         printf("\nAté a próxima!\n");
-        // oi prof <3
         //isso definitivamente não foi feito por uma inteligência artificial rsrsrs...
         
-        free(leitores);
-        leitores = NULL;
-        free(livros);
-        livros = NULL;
-        free(reservas);
-        reservas = NULL;
-        free(emprestimos);
-        emprestimos = NULL;
-        free(funcionarios);
-        funcionarios = NULL;
+       
         free(plivros);
         plivros = NULL;
         free(pleitor);
