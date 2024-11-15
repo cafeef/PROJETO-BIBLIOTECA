@@ -587,7 +587,6 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
 
         if(op==2) {
             int i;
-            cod = op - 2;
             limpar();
             printf("Livros locados - %s",  (*leitores)[cod].nome);
             printf("\n");

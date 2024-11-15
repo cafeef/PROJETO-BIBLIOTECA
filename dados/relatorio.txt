@@ -1,9 +1,7 @@
 Livros disponíveis: 
 Álgebra_Linear - Alfredo_Steinbruch
-Cálculo_1 - James_Stewart
 Sapiens - Yuval_Harari
-1984 - George_Orwell
-ED1 - Simone
+Nação_Dopamina - Anna_Lembke
 
 Livros emprestados: 
 Cálculo_1
