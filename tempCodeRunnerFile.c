@@ -1,0 +1,2 @@
+
+                    int dias = diferenca((*empresti

@@ -4,9 +4,6 @@ Sapiens - Yuval_Harari
 Nação_Dopamina - Anna_Lembke
 
 Livros emprestados: 
-Cálculo_1
-1984
-ED1
 
 Livro mais emprestado: 
 Álgebra_Linear com 3 empréstimos
@@ -16,14 +13,15 @@ Livro: Álgebra_Linear | Data reserva: 14-11-2024 | Leitor: Fernanda_Pacheco
 Livro: 1984 | Data reserva: 14-11-2024 | Leitor: Andre_Martins 
 
 Funcionário com maior número de movimentações:
-Funcionário: João_Nunes | Total de movimentações: 49
-Total empréstimos: 35 | Total devoluções: 14
+Funcionário: João_Nunes | Total de movimentações: 77
+Total empréstimos: 35 | Total devoluções: 42
 
 Leitores com empréstimos ativos: 
-Leitor: Maria_Antonieta
-Leitor: Andre_Martins
-Leitor: Andre_Martins
 
 Histórico de multas: 
 
 Multas (R$2/dia):
+Multa de R$26.00 para Maria_Antonieta - Venceu no dia: 01-11-2024
+Multa de R$8.00 para Andre_Martins - Venceu no dia: 10-11-2024
+Multa de R$492.00 para Andre_Martins - Venceu no dia: 13-03-2024
+Multa de R$14.00 para Andre_Martins - Venceu no dia: 07-11-2024
