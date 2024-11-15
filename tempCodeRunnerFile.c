@@ -1,2 +1,2 @@
 
-                    int dias = diferenca((*empresti
+    Treserva *preserva = NULL;

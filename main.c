@@ -68,6 +68,7 @@ void adicionarReserva(Treserva **reservas, int *quantidade, int codl, int codlei
 void reescreverReserva(Treserva **reservas, int *quantidade);
 void reescreverEmprestimo(Temprestimos **emprestimos, int *quantidadeem);
 
+
 int main() {
     limpar();
     #ifdef _WIN32
@@ -247,6 +248,27 @@ int main() {
     case 3: 
         escrever_relatorio(&plivros, &num_linhasLivro, &preserva, &num_linhasReserva, &pemprestimos, &num_linhasEmprestimo, &pleitor, &num_linhasLeitor, &pfuncionario, &num_linhasFuncionario);
         printf("\nAté a próxima!\n");
+        // oi prof <3
+        //isso definitivamente não foi feito por uma inteligência artificial rsrsrs...
+        
+        free(leitores);
+        leitores = NULL;
+        free(livros);
+        livros = NULL;
+        free(reservas);
+        reservas = NULL;
+        free(emprestimos);
+        emprestimos = NULL;
+        free(funcionarios);
+        funcionarios = NULL;
+        free(plivros);
+        plivros = NULL;
+        free(pleitor);
+        pleitor = NULL;
+        free(pemprestimos);
+        pemprestimos = NULL;
+        free(preserva);
+        preserva = NULL;
         exit(1);
    
     default:
@@ -254,6 +276,7 @@ int main() {
         break;
     }
    }
+   
 }
 
 void limpar() {
@@ -1173,11 +1196,10 @@ void busca_multa_relatorio(FILE **relatorio, Temprestimos  **pemprestimo, int *n
         if((*pemprestimo)[i].status == 1){
             if (comparar((*pemprestimo)[i].data_devp)){
                 int dias = diferenca((*pemprestimo)[i].data_devp);
-                if (dias != 0){
+                if (dias != 0) {
                     fprintf(*relatorio, "\nMulta de R$%.2f para %s - Venceu no dia: %s", (float)(dias*2), (*pleitor)[(*pemprestimo)[i].cod_leitor-1].nome, (*pemprestimo)[i].data_devp);        
                 }
             }
         }
     }
 }
-

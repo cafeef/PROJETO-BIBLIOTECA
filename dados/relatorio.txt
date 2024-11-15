@@ -11,6 +11,7 @@ Livro mais emprestado:
 Reservas em aberto: 
 Livro: Álgebra_Linear | Data reserva: 14-11-2024 | Leitor: Fernanda_Pacheco 
 Livro: 1984 | Data reserva: 14-11-2024 | Leitor: Andre_Martins 
+Livro: Cálculo_1 | Data reserva: 14-11-2024 | Leitor: Fernanda_Pacheco 
 
 Funcionário com maior número de movimentações:
 Funcionário: João_Nunes | Total de movimentações: 77
