@@ -1,5 +1,4 @@
 #include <stdio.h>
-
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -483,10 +482,12 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
     limpar();
     getchar(); // Limpa o buffer
     int op, cod;
-    printf("| NOVO ACESSO\n\n1 | Usuário existente\n2 | Adicionar usuário\n\nDigite a operação: ");
+    printf("| NOVO ACESSO\n\n1 | Usuário existente\n2 | Adicionar usuário\n3 | Voltar ao menu\n\nDigite a operação: ");
     scanf("%d", &op);
     getchar(); // Limpa o buffer
-   
+    if(op==3){
+            return;
+         }
     if (op == 1) {
         limpar();
         printf("| NOVO ACESSO\n\nDigite o código do usuário: ");
@@ -500,11 +501,14 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
         (*leitores)[op-1].email);
         cod = op-1;
 
-        printf("\n\n1 | Empréstimo\n2 | Renovar/Devolver livro ");
+        printf("\n\n1 | Empréstimo\n2 | Renovar/Devolver livro\n3 | Voltar para o menu ");
         op = 0;
         scanf("%d", &op);
         getchar(); // Limpa o buffer
-         printf("%d", op);
+         if(op==3){
+            return;
+         }
+         
         if(op==1) {
             int i, total;
             total =0;
@@ -813,7 +817,7 @@ void escrever_relatorio(Tlivro **plivros, int *numlinhasLivro, Treserva **preser
         fprintf(relatorio, "\nLivros emprestados: \n");
         for (int i = 0; i < *numlinhasEmprestimo; i++) {
             if ((*pemprestimo)[i].status == 0)
-                fprintf(relatorio, "%s\n", (*plivros)[((*pemprestimo)[i].codigo_livro)].titulo);
+                fprintf(relatorio, "%s\n", (*plivros)[((*pemprestimo)[i].codigo_livro - 1)].titulo);
         }
         int livro = 0;
         //livros mais emprestados e reservas em aberto

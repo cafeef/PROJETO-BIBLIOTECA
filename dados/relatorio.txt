@@ -6,9 +6,9 @@ Sapiens - Yuval_Harari
 ED1 - Simone
 
 Livros emprestados: 
-Sapiens
+CÃ¡lculo_1
+1984
 ED1
-ª´
 
 Livro mais emprestado: 
 Ãlgebra_Linear com 3 emprÃ©stimos
