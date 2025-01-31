@@ -9,9 +9,9 @@ Livro mais emprestado:
 Álgebra_Linear com 3 empréstimos
 
 Reservas em aberto: 
-Livro: Álgebra_Linear | Data reserva: 14-11-2024 | Leitor: Fernanda_Pacheco 
+Livro: Álgebra_Linear | Data reserva: 14-11-2024 | Leitor: FernandaPacheco 
 Livro: 1984 | Data reserva: 14-11-2024 | Leitor: Andre_Martins 
-Livro: Cálculo_1 | Data reserva: 14-11-2024 | Leitor: Fernanda_Pacheco 
+Livro: Cálculo_1 | Data reserva: 14-11-2024 | Leitor: FernandaPacheco 
 
 Funcionário com maior número de movimentações:
 Funcionário: João_Nunes | Total de movimentações: 77
@@ -22,7 +22,14 @@ Leitores com empréstimos ativos:
 Histórico de multas: 
 
 Multas (R$2/dia):
-Multa de R$26.00 para Maria_Antonieta - Venceu no dia: 01-11-2024
-Multa de R$8.00 para Andre_Martins - Venceu no dia: 10-11-2024
-Multa de R$492.00 para Andre_Martins - Venceu no dia: 13-03-2024
-Multa de R$14.00 para Andre_Martins - Venceu no dia: 07-11-2024
+Multa de R$142.00 para Maria_Antonieta - Venceu no dia: 21-11-2024
+Multa de R$114.00 para Maria_Antonieta - Venceu no dia: 05-12-2024
+Multa de R$142.00 para FernandaPacheco - Venceu no dia: 21-11-2024
+Multa de R$182.00 para Maria_Antonieta - Venceu no dia: 01-11-2024
+Multa de R$164.00 para Andre_Martins - Venceu no dia: 10-11-2024
+Multa de R$142.00 para Andre_Martins - Venceu no dia: 21-11-2024
+Multa de R$648.00 para Andre_Martins - Venceu no dia: 13-03-2024
+Multa de R$142.00 para FernandaPacheco - Venceu no dia: 21-11-2024
+Multa de R$170.00 para Andre_Martins - Venceu no dia: 07-11-2024
+Multa de R$142.00 para FernandaPacheco - Venceu no dia: 21-11-2024
+Multa de R$142.00 para FernandaPacheco - Venceu no dia: 21-11-2024

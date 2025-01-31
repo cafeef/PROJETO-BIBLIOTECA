@@ -6,7 +6,7 @@
     #include <time.h>
     #include <windows.h>
     #define sleep(seconds) Sleep((seconds) * 1000) // Converte segundos para milissegundos
-#elif __linux__
+#elif defined(__linux__) || defined(__APPLE__)
     #include <unistd.h>
 #endif
 
@@ -249,8 +249,6 @@ int main() {
         escrever_relatorio(&plivros, &num_linhasLivro, &preserva, &num_linhasReserva, &pemprestimos, &num_linhasEmprestimo, &pleitor, &num_linhasLeitor, &pfuncionario, &num_linhasFuncionario);
         printf("\nAté a próxima!\n");
         //isso definitivamente não foi feito por uma inteligência artificial rsrsrs...
-        
-       
         free(plivros);
         plivros = NULL;
         free(pleitor);
@@ -270,7 +268,6 @@ int main() {
 }
 
 void limpar() {
-    
     #ifdef _WIN32
         system("cls");  // Limpa o terminal no Windows
     #else
@@ -368,37 +365,30 @@ Treserva *inicializa_reserva (int *num_linhasReserva) {
 }
 
 void adicionarUsuario(Tleitor **leitores, int *quantidade) {
-
     // Realoca memória -  adiciona um item a Tleitor
     Tleitor *temp = realloc(*leitores, (*quantidade + 1) * sizeof(Tleitor));
     if (temp == NULL) {
         printf("Erro ao alocar memória.\n");
         exit(1);
     }
+        // Atualiza o ponteiro de leitores
+        *leitores = temp;
 
-    // Atualiza o ponteiro de leitores
-    *leitores = temp;
+        // Adição de 1 Leitor a quantidade
+    
+        printf("Digite o nome do usuário: ");
+        scanf("%s", (*leitores)[*quantidade].nome);
+        getchar(); // Limpa o buffer
 
-    // Adição de 1 Leitor a quantidade
-   
-    printf("Digite o nome do usuário: ");
-    scanf("%s", &(*leitores)[*quantidade].nome);
-    getchar(); // Limpa o buffer
-
-    printf("Digite o e-mail do usuário: ");
-    scanf("%s", &(*leitores)[*quantidade].email);
-    getchar(); // Limpa o buffer
-
-
-    // Gerar código para o usuário
-   
-    (*leitores)[*quantidade].codigo = *quantidade+1;  // Código sequencial
-
-    // Inicializa os outros campos como 0
-    (*leitores)[*quantidade].qtd_emprestados = 0;
-    (*leitores)[*quantidade].hist_multas = 0;
-
-     (*quantidade)++;
+        printf("Digite o e-mail do usuário: ");
+        scanf("%s", (*leitores)[*quantidade].email);
+        getchar(); // Limpa o buffer
+        // Gerar código para o usuário
+        (*leitores)[*quantidade].codigo = *quantidade+1;  // Código sequencial
+        // Inicializa os outros campos como 0
+        (*leitores)[*quantidade].qtd_emprestados = 0;
+        (*leitores)[*quantidade].hist_multas = 0;
+        (*quantidade)++;
 }
 
 void adicionarReserva(Treserva **reservas, int *quantidade, int codl, int codlei, char data[20]) {
@@ -551,7 +541,7 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
                 getchar(); // Limpa o buffer
                 
                 int disp = (*livros)[cod2-1].status;
-                if(disp == 1){
+                if(disp == 1) {
                     printf("Confirmar locação de '%s', para %s? ", (*livros)[cod2-1].titulo, (*leitores)[cod].nome);
                     getchar();
                     cadastrar_emprestimo(&*emprestimos, &*quantidadeem, cod2, (*leitores)[cod].codigo);
@@ -591,10 +581,8 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
                         getchar();
                     }    
                 }
-                }
+            }
         }
-        }
-
         if(op==2) {
             int i;
             limpar();
@@ -702,8 +690,6 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
                     (*pfuncionario)[cod_funcionario - 1].total_devolucoes += 1;
                     reescreverFuncionario(&*pfuncionario, &*quantidadefun);
                     op = 0;
-                    
-
                 }
 
             }
@@ -716,12 +702,12 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
             limpar();
             return;
         } 
-     } else if (op == 2) {
+     }
+    } 
+     else if (op == 2) {
         limpar();
-        printf("| NOVO ACESSO\n\n");
         // Chamando a função para adicionar o usuário
         adicionarUsuario(&*leitores, &*quantidade);
-        
         // Exibindo informações após a adição do usuário
         limpar();
         printf("| NOVO ACESSO\n\n");
@@ -730,7 +716,7 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
         (*leitores)[*quantidade - 1].nome,
         (*leitores)[*quantidade - 1].email);
 
-        reescreverLeitor(&*leitores, &*quantidade);
+        reescreverLeitor(leitores, &quantidade);
 
         // Você pode adicionar aqui um "pause" se necessário
         printf("\nPressione qualquer tecla para voltar ao menu...");
