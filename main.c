@@ -716,7 +716,7 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
         (*leitores)[*quantidade - 1].nome,
         (*leitores)[*quantidade - 1].email);
 
-        reescreverLeitor(leitores, &quantidade);
+        reescreverLeitor(&*leitores, &*quantidade);
 
         // Você pode adicionar aqui um "pause" se necessário
         printf("\nPressione qualquer tecla para voltar ao menu...");
