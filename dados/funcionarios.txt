@@ -1,5 +1,5 @@
 5
-1 João_Nunes 1 35 42
+1 João_Nunes 1 39 46
 2 Mariana_Ferreira 1 11 16
 3 Julia_Machado 3 5 3
 4 Amanda 3 0 0

@@ -528,10 +528,16 @@ void novoacesso(Tleitor **leitores, int *quantidade, Temprestimos **emprestimos,
             }
             else {
                 int cod2;
-                 printf("O usuário %s possui %d/4 livro(s) locados.",  (*leitores)[cod].nome, total);
+                 printf("O usuário %s possui %d/4 livro(s) locados.\n",  (*leitores)[cod].nome, total);
                  printf("\nLivros disponíveis:\n");
                 for (int i = 0; i < *quantidadeli; i++) {
                     if ((*livros)[i].status == 1) {
+                        printf("%d: %s - %s\n", (*livros)[i].codigo, (*livros)[i].titulo, (*livros)[i].autor);
+                    }
+                }
+                printf("\nLivros para reserva:\n");
+                for (int i = 0; i < *quantidadeli; i++) {
+                    if ((*livros)[i].status == 3) {
                         printf("%d: %s - %s\n", (*livros)[i].codigo, (*livros)[i].titulo, (*livros)[i].autor);
                     }
                 }
